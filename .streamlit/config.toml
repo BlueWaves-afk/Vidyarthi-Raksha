@@ -1,0 +1,11 @@
+[theme]
+primaryColor = "#F26522"  # UIDAI Saffron/Orange for accents
+backgroundColor = "#FFFFFF" # Clean White background
+secondaryBackgroundColor = "#F0F2F6" # Light Grey for sidebars
+textColor = "#262730" # Dark readable text
+font = "sans serif"
+
+[server]
+headless = true
+port = 8501
+enableCORS = false
