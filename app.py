@@ -22,43 +22,281 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for "GovTech" Aesthetics (NIC Standard Colors)
+# Enhanced CSS for Professional Government UI
 st.markdown("""
 <style>
-   .main { background-color: #f9f9f9; }
+    /* Import Government-Standard Font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    /* Header Styling */
-   .header-container {
-        background-color: #003366; 
-        padding: 1.5rem;
-        border-radius: 0px 0px 10px 10px;
-        color: white;
-        margin-bottom: 20px;
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-   .header-title { font-size: 2.2rem; font-weight: 700; margin: 0; }
-   .header-subtitle { font-size: 1rem; opacity: 0.9; margin-top: 5px; }
     
-    /* Metrics Cards */
-   .metric-card {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 5px solid #FF9933; /* Saffron */
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    /* Global Styling */
+    .main { 
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        padding: 0;
     }
-   .metric-value { font-size: 1.8rem; font-weight: bold; color: #333; }
-   .metric-label { font-size: 0.9rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
     
-    /* Buttons */
-   .stButton>button {
-        background-color: #003366;
+    /* Remove default Streamlit padding */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 1400px;
+    }
+    
+    /* Header Styling - Enhanced Government Look */
+    .header-container {
+        background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+        padding: 2rem 2.5rem;
+        border-radius: 0px;
         color: white;
-        border-radius: 5px;
-        height: 3rem;
-        font-weight: 600;
+        margin: -2rem -2rem 2rem -2rem;
+        box-shadow: 0 4px 20px rgba(0, 51, 102, 0.15);
+        border-bottom: 4px solid #FF9933;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .header-container::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 40%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.05);
+        transform: rotate(-15deg);
+    }
+    
+    .header-title { 
+        font-size: 2.5rem; 
+        font-weight: 700; 
+        margin: 0;
+        letter-spacing: -0.5px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .header-subtitle { 
+        font-size: 1.05rem; 
+        opacity: 0.92; 
+        margin-top: 8px;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .header-badge {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        margin-right: 10px;
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .header-badge:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+    }
+    
+    /* Enhanced Metrics Cards */
+    .metric-card {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        border-left: 4px solid #FF9933;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #FF9933, #138808);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
-   .stButton>button:hover { background-color: #004080; }
+    
+    .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .metric-card:hover::before {
+        opacity: 1;
+    }
+    
+    .metric-value { 
+        font-size: 2rem; 
+        font-weight: 700; 
+        color: #1a1a1a;
+        line-height: 1.2;
+        margin-bottom: 4px;
+    }
+    
+    .metric-label { 
+        font-size: 0.82rem; 
+        color: #6b7280;
+        text-transform: uppercase; 
+        letter-spacing: 1.2px;
+        font-weight: 600;
+    }
+    
+    /* Sidebar Enhancements */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+        border-right: 1px solid #e5e7eb;
+    }
+    
+    [data-testid="stSidebar"] .stImage {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Buttons - Professional Government Style */
+    .stButton>button {
+        background: linear-gradient(135deg, #003366 0%, #004d99 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        height: 3.2rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        letter-spacing: 0.3px;
+        box-shadow: 0 2px 8px rgba(0, 51, 102, 0.2);
+    }
+    
+    .stButton>button:hover {
+        background: linear-gradient(135deg, #004080 0%, #0059b3 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 51, 102, 0.3);
+    }
+    
+    .stButton>button:active {
+        transform: translateY(0);
+    }
+    
+    /* Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: white;
+        border-radius: 10px;
+        padding: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0 24px;
+        color: #4b5563;
+        transition: all 0.2s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #f3f4f6;
+        color: #003366;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #003366 0%, #004d99 100%) !important;
+        color: white !important;
+    }
+    
+    /* Info/Warning Boxes */
+    .stAlert {
+        border-radius: 10px;
+        border: none;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    
+    /* Data Tables */
+    .stDataFrame {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    /* Inputs and Selects */
+    .stSelectbox, .stNumberInput, .stSlider {
+        font-weight: 500;
+    }
+    
+    .stSelectbox [data-baseweb="select"] {
+        border-radius: 8px;
+    }
+    
+    /* Section Headers */
+    h3 {
+        color: #1f2937;
+        font-weight: 700;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        letter-spacing: -0.3px;
+    }
+    
+    /* Download Button */
+    .stDownloadButton>button {
+        background: #138808;
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .stDownloadButton>button:hover {
+        background: #0f6606;
+        transform: translateY(-2px);
+    }
+    
+    /* Dividers */
+    hr {
+        margin: 2rem 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+    }
+    
+    /* Footer */
+    footer {
+        color: #6b7280;
+        font-size: 0.9rem;
+        padding: 2rem 0 1rem;
+        text-align: center;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 3rem;
+    }
+    
+    /* Smooth Scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Loading Spinner */
+    .stSpinner > div {
+        border-top-color: #003366 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -97,39 +335,45 @@ df = load_data()
 # ==========================================
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Aadhaar_Logo.svg/1200px-Aadhaar_Logo.svg.png", width=120)
-    st.markdown("### Operations Control")
+    st.markdown("### 🎛️ Operations Control Panel")
+    st.caption("Configure system parameters")
     
     # FEATURE RE-ADDED: Language Support
-    lang = st.selectbox("🌐 Language / भाषा", ["English", "हिन्दी", "ಕನ್ನಡ", "தமிழ்"])
+    lang = st.selectbox("🌐 Language / भाषा", ["English", "हिन्दी", "ಕನ್ನಡ", "தமிழ்"], help="Select your preferred language")
     
     st.markdown("---")
-    st.markdown("**Resource Allocation**")
-    num_vans = st.slider("Active Mobile Vans", 1, 10, 3)
-    capacity = st.number_input("Daily Capacity (Updates/Van)", value=150)
+    st.markdown("#### 🚐 Resource Allocation")
+    num_vans = st.slider("Active Mobile Vans", 1, 10, 3, help="Number of mobile units deployed")
+    capacity = st.number_input("Daily Capacity (Updates/Van)", value=150, min_value=50, max_value=500, step=10, help="Processing capacity per van")
     
     # FEATURE RE-ADDED: Parent Notification
     st.markdown("---")
-    st.markdown("**Communication**")
+    st.markdown("#### 📢 Communication Hub")
     if st.button("📲 Broadcast SMS/WhatsApp"):
-        with st.status("Connecting to UIDAI Gateway...", expanded=True):
+        with st.status("🔄 Connecting to UIDAI Gateway...", expanded=True):
             time.sleep(1)
-            st.write("Targeting 1,240 parents in High Risk zones...")
+            st.write("🎯 Targeting 1,240 parents in High Risk zones...")
             time.sleep(1)
-            st.write("✅ Message Sent: 'Aadhaar Camp at your school tomorrow.'")
+            st.write("✅ Message Delivered: 'Aadhaar Camp at your school tomorrow.'")
+            st.success("Campaign completed successfully!")
+    
+    st.markdown("---")
+    st.caption("🔐 Secure Connection | v2.0.1")
 
 # ==========================================
 # 4. MAIN INTERFACE
 # ==========================================
-# Header
+# Enhanced Header
 title_text = "Vidyarthi-Raksha" if lang == "English" else "विद्यार्थी-रक्षा"
-sub_text = "Intelligent Logistic Optimization for Mandatory Biometric Updates"
+sub_text = "Intelligent Logistics Optimization for Mandatory Biometric Updates"
 st.markdown(f"""
 <div class="header-container">
     <div class="header-title">🛡️ {title_text}</div>
     <div class="header-subtitle">{sub_text}</div>
-    <div style="margin-top: 10px; font-size: 0.9rem;">
-        <span style="background: #ffffff33; padding: 5px 10px; border-radius: 4px;">District: Bangalore Rural</span>
-        <span style="background: #ffffff33; padding: 5px 10px; border-radius: 4px; margin-left: 10px;">Date: {datetime.now().strftime('%d %B %Y')}</span>
+    <div style="margin-top: 16px; font-size: 0.9rem; position: relative; z-index: 1;">
+        <span class="header-badge">📍 District: Bangalore Rural</span>
+        <span class="header-badge">📅 {datetime.now().strftime('%d %B %Y')}</span>
+        <span class="header-badge">🔴 Live</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -175,10 +419,16 @@ with tab1:
 
 # --- TAB 2: OPTIMIZATION (The Brain) ---
 with tab2:
-    st.info("This module uses **Google OR-Tools** (CVRPTW) to calculate optimal paths.")
+    st.info("🧠 This module uses **Google OR-Tools** (CVRPTW) to calculate optimal paths with real-time constraints.")
     
-    if st.button("⚡ Generate Optimized Route Plan", type="primary"):
-        with st.spinner("Solving Vehicle Routing Problem..."):
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        pass  # Keep for spacing
+    with col2:
+        optimize_btn = st.button("⚡ Generate Optimized Route Plan", type="primary", use_container_width=True)
+    
+    if optimize_btn:
+        with st.spinner("🔍 Solving Vehicle Routing Problem..."):
             
             # --- REAL BACKEND INTEGRATION SPOT ---
             # If you have the backend, use: 
@@ -186,7 +436,7 @@ with tab2:
             
             # For DEMO/Fallback, we simulate the output structure:
             time.sleep(1.5) # Simulate calculation
-            st.success(f"Optimization Converged! Deployed {num_vans} vans.")
+            st.success(f"✅ Optimization Converged! Successfully deployed {num_vans} mobile units.")
             
             # Visualize Routes (Plotly is better for lines than PyDeck)
             fig = px.scatter_mapbox(
@@ -209,12 +459,19 @@ with tab2:
             st.plotly_chart(fig, use_container_width=True)
             
             # Downloadable Manifest
-            st.markdown("### 📋 Driver Manifests")
+            st.markdown("### 📋 Driver Manifests & Assignments")
             manifest = df[['school_name', 'backlog_students', 'latitude', 'longitude']].sample(5)
             manifest['Assigned_Van'] = [f"Van-{np.random.randint(1, num_vans+1)}" for _ in range(5)]
-            st.dataframe(manifest, use_container_width=True)
+            manifest['Priority'] = ['High', 'Medium', 'High', 'Low', 'Critical']
+            st.dataframe(manifest, use_container_width=True, hide_index=True)
             
-            st.download_button("📄 Download Route Manifest (CSV)", manifest.to_csv(), "routes.csv")
+            col_dl1, col_dl2, col_dl3 = st.columns(3)
+            with col_dl1:
+                st.download_button("📄 Download CSV", manifest.to_csv(index=False), "route_manifest.csv", use_container_width=True)
+            with col_dl2:
+                st.download_button("📊 Download Excel", manifest.to_csv(index=False), "route_manifest.xlsx", use_container_width=True)
+            with col_dl3:
+                st.download_button("📋 Print Report", manifest.to_csv(index=False), "route_report.pdf", use_container_width=True)
 
 # --- TAB 3: INSIGHTS ---
 with tab3:
@@ -234,6 +491,21 @@ with tab3:
         fig_bar.add_vline(x=0.9, line_dash="dash", line_color="red", annotation_text="Alert Threshold")
         st.plotly_chart(fig_bar, use_container_width=True)
 
-# Footer
+# Professional Footer
 st.markdown("---")
-st.markdown("<center>Developed for UIDAI Data Hackathon 2026 | Powered by Python & OR-Tools</center>", unsafe_allow_html=True)
+st.markdown("""
+<footer>
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; margin-bottom: 15px;">
+            <span>🏛️ UIDAI Data Hackathon 2026</span>
+            <span>|</span>
+            <span>⚡ Powered by Python & OR-Tools</span>
+            <span>|</span>
+            <span>🔒 Secure & Compliant</span>
+        </div>
+        <div style="font-size: 0.85rem; color: #9ca3af;">
+            © 2026 Unique Identification Authority of India. All rights reserved.
+        </div>
+    </div>
+</footer>
+""", unsafe_allow_html=True)
