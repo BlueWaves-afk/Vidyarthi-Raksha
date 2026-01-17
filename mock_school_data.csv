@@ -1,51 +1,101 @@
-school_id,school_name,lat,lon,total_students,pending_mbu,risk_level
-SCH-1001,"Govt High School, Zone Central - 1",13.152825,77.521469,311,12,Low
-SCH-1002,"Govt High School, Zone South - 2",13.20851,77.499145,145,83,High
-SCH-1003,"Govt High School, Zone North - 3",13.237258,77.490953,486,14,Low
-SCH-1004,"Govt High School, Zone Central - 4",13.237562,77.478523,468,123,High
-SCH-1005,"Govt High School, Zone East - 5",13.189374,77.519076,438,20,Low
-SCH-1006,"Govt High School, Zone West - 6",13.196535,77.534272,264,1,Low
-SCH-1007,"Govt High School, Zone East - 7",13.185918,77.460491,164,10,Low
-SCH-1008,"Govt High School, Zone North - 8",13.194162,77.457784,454,15,Low
-SCH-1009,"Govt High School, Zone West - 9",13.183038,77.53013,379,15,Low
-SCH-1010,"Govt High School, Zone West - 10",13.243208,77.474173,164,4,Low
-SCH-1011,"Govt High School, Zone Central - 11",13.162431,77.539477,249,130,High
-SCH-1012,"Govt High School, Zone Central - 12",13.190498,77.539007,116,10,Low
-SCH-1013,"Govt High School, Zone South - 13",13.168393,77.514528,208,73,High
-SCH-1014,"Govt High School, Zone North - 14",13.223023,77.494501,154,14,Low
-SCH-1015,"Govt High School, Zone West - 15",13.154404,77.542035,228,89,High
-SCH-1016,"Govt High School, Zone Central - 16",13.188334,77.527559,482,2,Low
-SCH-1017,"Govt High School, Zone North - 17",13.185431,77.537186,425,1,Low
-SCH-1018,"Govt High School, Zone Central - 18",13.150652,77.525507,323,13,Low
-SCH-1019,"Govt High School, Zone North - 19",13.218604,77.465723,151,19,Low
-SCH-1020,"Govt High School, Zone North - 20",13.176518,77.474187,469,67,High
-SCH-1021,"Govt High School, Zone North - 21",13.225998,77.455521,447,6,Low
-SCH-1022,"Govt High School, Zone East - 22",13.162647,77.458159,176,13,Low
-SCH-1023,"Govt High School, Zone South - 23",13.202788,77.510132,129,116,High
-SCH-1024,"Govt High School, Zone East - 24",13.233191,77.467425,485,133,High
-SCH-1025,"Govt High School, Zone North - 25",13.169427,77.490131,331,51,High
-SCH-1026,"Govt High School, Zone Central - 26",13.226663,77.516114,253,4,Low
-SCH-1027,"Govt High School, Zone North - 27",13.154069,77.4504,284,75,High
-SCH-1028,"Govt High School, Zone Central - 28",13.165912,77.519873,203,100,High
-SCH-1029,"Govt High School, Zone West - 29",13.1598,77.52484,468,16,Low
-SCH-1030,"Govt High School, Zone West - 30",13.248149,77.505518,244,58,High
-SCH-1031,"Govt High School, Zone East - 31",13.189273,77.507119,180,5,Low
-SCH-1032,"Govt High School, Zone Central - 32",13.169031,77.483725,217,5,Low
-SCH-1033,"Govt High School, Zone South - 33",13.179167,77.520612,352,9,Low
-SCH-1034,"Govt High School, Zone Central - 34",13.186032,77.464919,263,109,High
-SCH-1035,"Govt High School, Zone South - 35",13.163003,77.481482,396,67,High
-SCH-1036,"Govt High School, Zone Central - 36",13.189852,77.47741,180,73,High
-SCH-1037,"Govt High School, Zone East - 37",13.165935,77.45276,446,15,Low
-SCH-1038,"Govt High School, Zone North - 38",13.244911,77.520263,147,3,Low
-SCH-1039,"Govt High School, Zone East - 39",13.231945,77.52159,206,10,Low
-SCH-1040,"Govt High School, Zone Central - 40",13.206849,77.468325,444,4,Low
-SCH-1041,"Govt High School, Zone North - 41",13.166185,77.530702,491,12,Low
-SCH-1042,"Govt High School, Zone Central - 42",13.181312,77.530146,345,12,Low
-SCH-1043,"Govt High School, Zone North - 43",13.219091,77.521072,120,19,Low
-SCH-1044,"Govt High School, Zone South - 44",13.174415,77.471253,162,6,Low
-SCH-1045,"Govt High School, Zone East - 45",13.173406,77.466648,275,10,Low
-SCH-1046,"Govt High School, Zone North - 46",13.20508,77.496547,407,10,Low
-SCH-1047,"Govt High School, Zone West - 47",13.240699,77.547234,153,143,High
-SCH-1048,"Govt High School, Zone West - 48",13.20182,77.546276,203,105,High
-SCH-1049,"Govt High School, Zone Central - 49",13.214621,77.50609,269,18,Low
-SCH-1050,"Govt High School, Zone Central - 50",13.211026,77.543658,344,14,Low
+school_id,school_name,latitude,longitude,backlog_students,gender_parity_index,priority_score,status,contact_number
+SCH-1001,"Govt Primary School, Devanahalli Block-6",13.189799,77.539983,31,0.92,0.08,NORMAL,+91-9866254750
+SCH-1002,"Govt Primary School, Doddaballapur Block-1",13.133187,77.500374,347,0.87,0.65,CRITICAL,+91-9867730296
+SCH-1003,"Govt Primary School, Hoskote Block-8",13.261066,77.583668,23,1.01,0.04,NORMAL,+91-9841862898
+SCH-1004,"Govt High School, Ramanagara Block-7",13.266742,77.485781,67,0.77,0.19,NORMAL,+91-9872089258
+SCH-1005,"Zilla Parishad School, Magadi Block-4",13.192762,77.573793,76,0.72,0.22,NORMAL,+91-9857816316
+SCH-1006,"Govt High School, Magadi Block-9",13.24246,77.47282,66,0.85,0.16,NORMAL,+91-9833807673
+SCH-1007,"Zilla Parishad School, Devanahalli Block-1",13.156233,77.595524,77,0.91,0.16,NORMAL,+91-9891630308
+SCH-1008,"Govt High School, Magadi Block-5",13.265165,77.571478,47,0.92,0.11,NORMAL,+91-9826185573
+SCH-1009,"Zilla Parishad School, Devanahalli Block-1",13.157325,77.516264,45,0.84,0.13,NORMAL,+91-9843358191
+SCH-1010,"Zilla Parishad School, Nelamangala Block-9",13.120141,77.577698,58,0.88,0.14,NORMAL,+91-9826771568
+SCH-1011,"Zilla Parishad School, Hoskote Block-8",13.207884,77.594581,49,0.95,0.1,NORMAL,+91-9847204361
+SCH-1012,"Model Govt School, Magadi Block-9",13.166539,77.6277,62,0.87,0.15,NORMAL,+91-9862095384
+SCH-1013,"Govt Primary School, Doddaballapur Block-7",13.183953,77.47449,43,0.78,0.14,NORMAL,+91-9823069255
+SCH-1014,"Govt High School, Devanahalli Block-1",13.138387,77.489471,36,0.92,0.09,NORMAL,+91-9810398563
+SCH-1015,"Govt High School, Nelamangala Block-8",13.220773,77.487285,55,0.95,0.11,NORMAL,+91-9867200675
+SCH-1016,"Adarsha Vidyalaya, Devanahalli Block-8",13.235949,77.578954,252,0.81,0.5,CRITICAL,+91-9896012520
+SCH-1017,"Govt Primary School, Devanahalli Block-3",13.206253,77.56851,34,1.02,0.06,NORMAL,+91-9863012434
+SCH-1018,"Govt High School, Doddaballapur Block-1",13.152868,77.614274,297,0.94,0.54,CRITICAL,+91-9889955489
+SCH-1019,"Model Govt School, Hoskote Block-8",13.120066,77.541539,22,0.69,0.13,NORMAL,+91-9865854454
+SCH-1020,"Model Govt School, Devanahalli Block-4",13.277977,77.506303,33,0.91,0.08,NORMAL,+91-9889665914
+SCH-1021,"Zilla Parishad School, Hoskote Block-9",13.242476,77.488078,354,1.06,0.62,CRITICAL,+91-9811247192
+SCH-1022,"Zilla Parishad School, Devanahalli Block-1",13.16163,77.578281,68,0.99,0.12,NORMAL,+91-9848803918
+SCH-1023,"Zilla Parishad School, Ramanagara Block-9",13.2504,77.621356,60,1.01,0.1,NORMAL,+91-9885152281
+SCH-1024,"Govt Primary School, Nelamangala Block-9",13.276329,77.541681,75,1.01,0.13,NORMAL,+91-9819158855
+SCH-1025,"Govt High School, Nelamangala Block-2",13.232092,77.496343,14,0.9,0.05,NORMAL,+91-9818918355
+SCH-1026,"Zilla Parishad School, Nelamangala Block-1",13.153129,77.583247,191,0.72,0.42,CRITICAL,+91-9854068411
+SCH-1027,"Govt High School, Doddaballapur Block-7",13.190658,77.52638,32,0.94,0.07,NORMAL,+91-9842126674
+SCH-1028,"Zilla Parishad School, Devanahalli Block-9",13.178858,77.590385,52,0.7,0.18,NORMAL,+91-9892982408
+SCH-1029,"Govt High School, Devanahalli Block-2",13.154421,77.532765,79,1.04,0.14,NORMAL,+91-9859703598
+SCH-1030,"Model Govt School, Devanahalli Block-2",13.183913,77.562991,14,1.05,0.02,NORMAL,+91-9826167974
+SCH-1031,"Zilla Parishad School, Ramanagara Block-1",13.151398,77.476491,387,0.66,0.78,CRITICAL,+91-9849330522
+SCH-1032,"Zilla Parishad School, Doddaballapur Block-8",13.188405,77.528848,33,0.7,0.15,NORMAL,+91-9866067568
+SCH-1033,"Model Govt School, Magadi Block-8",13.264947,77.558358,60,0.87,0.14,NORMAL,+91-9894482310
+SCH-1034,"Zilla Parishad School, Magadi Block-5",13.268775,77.586412,349,0.97,0.62,CRITICAL,+91-9840184089
+SCH-1035,"Adarsha Vidyalaya, Doddaballapur Block-1",13.162369,77.591929,13,0.8,0.08,NORMAL,+91-9813890746
+SCH-1036,"Adarsha Vidyalaya, Devanahalli Block-8",13.251542,77.565263,268,0.77,0.54,CRITICAL,+91-9887908829
+SCH-1037,"Model Govt School, Doddaballapur Block-5",13.230277,77.512192,73,0.9,0.16,NORMAL,+91-9842598262
+SCH-1038,"Adarsha Vidyalaya, Magadi Block-4",13.143185,77.618988,23,0.87,0.08,NORMAL,+91-9868123363
+SCH-1039,"Govt Primary School, Nelamangala Block-4",13.217166,77.624992,25,0.82,0.1,NORMAL,+91-9880310360
+SCH-1040,"Adarsha Vidyalaya, Hoskote Block-1",13.164177,77.478279,51,0.9,0.12,NORMAL,+91-9818473966
+SCH-1041,"Zilla Parishad School, Doddaballapur Block-5",13.1824,77.487497,26,0.92,0.07,NORMAL,+91-9839677777
+SCH-1042,"Model Govt School, Hoskote Block-1",13.203415,77.517862,32,0.68,0.15,NORMAL,+91-9884987976
+SCH-1043,"Adarsha Vidyalaya, Doddaballapur Block-5",13.18815,77.61635,68,0.65,0.22,NORMAL,+91-9875343976
+SCH-1044,"Zilla Parishad School, Nelamangala Block-9",13.182935,77.62037,77,0.69,0.23,NORMAL,+91-9845165078
+SCH-1045,"Adarsha Vidyalaya, Ramanagara Block-5",13.128206,77.492103,73,0.96,0.14,NORMAL,+91-9881954070
+SCH-1046,"Model Govt School, Doddaballapur Block-9",13.149588,77.610417,19,0.91,0.06,NORMAL,+91-9850339877
+SCH-1047,"Govt High School, Hoskote Block-6",13.182727,77.510844,13,1.0,0.02,NORMAL,+91-9883734870
+SCH-1048,"Govt Primary School, Ramanagara Block-8",13.248642,77.576251,31,1.08,0.05,NORMAL,+91-9829735097
+SCH-1049,"Model Govt School, Ramanagara Block-5",13.142068,77.628543,71,0.94,0.14,NORMAL,+91-9853618614
+SCH-1050,"Govt High School, Nelamangala Block-3",13.274398,77.554524,375,0.77,0.73,CRITICAL,+91-9880070598
+SCH-1051,"Zilla Parishad School, Magadi Block-8",13.171896,77.59159,54,0.82,0.15,NORMAL,+91-9836716772
+SCH-1052,"Govt Primary School, Ramanagara Block-4",13.167454,77.4967,12,1.04,0.02,NORMAL,+91-9868655637
+SCH-1053,"Zilla Parishad School, Doddaballapur Block-1",13.254258,77.500722,165,1.05,0.29,CRITICAL,+91-9813004330
+SCH-1054,"Govt Primary School, Nelamangala Block-2",13.232276,77.518201,46,0.69,0.17,NORMAL,+91-9886723104
+SCH-1055,"Zilla Parishad School, Doddaballapur Block-9",13.138457,77.477287,31,1.01,0.05,NORMAL,+91-9844943028
+SCH-1056,"Zilla Parishad School, Hoskote Block-1",13.147832,77.615249,27,1.08,0.05,NORMAL,+91-9823190098
+SCH-1057,"Adarsha Vidyalaya, Hoskote Block-9",13.25532,77.61711,34,1.0,0.06,NORMAL,+91-9892816222
+SCH-1058,"Zilla Parishad School, Hoskote Block-8",13.234337,77.540747,151,0.79,0.33,CRITICAL,+91-9832149441
+SCH-1059,"Model Govt School, Hoskote Block-7",13.227622,77.530996,41,1.06,0.07,NORMAL,+91-9868691580
+SCH-1060,"Zilla Parishad School, Devanahalli Block-4",13.260116,77.614908,12,0.66,0.12,NORMAL,+91-9858469409
+SCH-1061,"Govt Primary School, Doddaballapur Block-5",13.173526,77.548901,55,0.88,0.13,NORMAL,+91-9863559717
+SCH-1062,"Adarsha Vidyalaya, Doddaballapur Block-7",13.206496,77.53553,35,0.81,0.12,NORMAL,+91-9879040776
+SCH-1063,"Govt High School, Magadi Block-7",13.247755,77.582595,13,1.06,0.02,NORMAL,+91-9889971351
+SCH-1064,"Govt High School, Magadi Block-2",13.258105,77.550889,67,0.67,0.22,NORMAL,+91-9867198286
+SCH-1065,"Govt Primary School, Hoskote Block-9",13.253752,77.62565,37,0.73,0.15,NORMAL,+91-9830098450
+SCH-1066,"Govt High School, Hoskote Block-5",13.174198,77.554645,64,1.08,0.11,NORMAL,+91-9865331507
+SCH-1067,"Govt High School, Hoskote Block-2",13.122572,77.474683,53,0.92,0.12,NORMAL,+91-9829768467
+SCH-1068,"Zilla Parishad School, Hoskote Block-1",13.161194,77.553289,33,0.99,0.06,NORMAL,+91-9810715129
+SCH-1069,"Model Govt School, Hoskote Block-1",13.218358,77.542475,43,0.92,0.1,NORMAL,+91-9832686367
+SCH-1070,"Zilla Parishad School, Magadi Block-2",13.141256,77.585863,352,0.8,0.68,CRITICAL,+91-9818253879
+SCH-1071,"Zilla Parishad School, Hoskote Block-7",13.12348,77.512532,45,0.72,0.16,NORMAL,+91-9819535058
+SCH-1072,"Govt High School, Doddaballapur Block-7",13.187538,77.550189,60,1.08,0.1,NORMAL,+91-9846246649
+SCH-1073,"Zilla Parishad School, Ramanagara Block-1",13.230187,77.471114,369,0.99,0.65,CRITICAL,+91-9857629541
+SCH-1074,"Govt Primary School, Devanahalli Block-9",13.217123,77.598486,38,0.72,0.15,NORMAL,+91-9859291330
+SCH-1075,"Govt High School, Hoskote Block-1",13.262508,77.585843,371,0.76,0.72,CRITICAL,+91-9872423158
+SCH-1076,"Zilla Parishad School, Nelamangala Block-2",13.225768,77.472292,40,0.75,0.14,NORMAL,+91-9862252161
+SCH-1077,"Model Govt School, Magadi Block-4",13.184819,77.491462,58,1.04,0.1,NORMAL,+91-9826985942
+SCH-1078,"Adarsha Vidyalaya, Magadi Block-1",13.265607,77.576238,211,0.8,0.43,CRITICAL,+91-9851794784
+SCH-1079,"Model Govt School, Nelamangala Block-6",13.238039,77.53632,371,1.02,0.65,CRITICAL,+91-9867304046
+SCH-1080,"Adarsha Vidyalaya, Hoskote Block-5",13.141703,77.560305,69,0.8,0.18,NORMAL,+91-9850323957
+SCH-1081,"Zilla Parishad School, Magadi Block-8",13.127892,77.595664,45,0.89,0.11,NORMAL,+91-9846667318
+SCH-1082,"Govt Primary School, Hoskote Block-9",13.246492,77.474956,58,0.87,0.14,NORMAL,+91-9872914315
+SCH-1083,"Govt Primary School, Nelamangala Block-4",13.244181,77.563048,329,0.71,0.66,CRITICAL,+91-9863111358
+SCH-1084,"Zilla Parishad School, Ramanagara Block-2",13.240644,77.477206,14,1.01,0.02,NORMAL,+91-9864022298
+SCH-1085,"Zilla Parishad School, Hoskote Block-3",13.276373,77.542315,78,1.05,0.14,NORMAL,+91-9888385415
+SCH-1086,"Govt Primary School, Hoskote Block-9",13.148022,77.501868,164,0.9,0.32,CRITICAL,+91-9814474157
+SCH-1087,"Model Govt School, Magadi Block-8",13.214699,77.523859,37,1.03,0.06,NORMAL,+91-9848007871
+SCH-1088,"Model Govt School, Hoskote Block-9",13.240019,77.489613,44,0.67,0.18,NORMAL,+91-9863977673
+SCH-1089,"Model Govt School, Magadi Block-7",13.144652,77.506427,12,0.77,0.09,NORMAL,+91-9892828198
+SCH-1090,"Zilla Parishad School, Magadi Block-4",13.25147,77.569661,78,1.05,0.14,NORMAL,+91-9892087263
+SCH-1091,"Govt Primary School, Devanahalli Block-4",13.1541,77.496175,24,0.88,0.08,NORMAL,+91-9851656247
+SCH-1092,"Zilla Parishad School, Hoskote Block-9",13.278183,77.578907,38,0.68,0.16,NORMAL,+91-9892581657
+SCH-1093,"Govt Primary School, Hoskote Block-8",13.130712,77.479245,66,0.71,0.2,NORMAL,+91-9866791232
+SCH-1094,"Govt High School, Hoskote Block-2",13.259944,77.506017,16,1.04,0.03,NORMAL,+91-9829969912
+SCH-1095,"Govt High School, Nelamangala Block-5",13.229845,77.619477,339,0.7,0.68,CRITICAL,+91-9812369168
+SCH-1096,"Model Govt School, Hoskote Block-2",13.259143,77.570235,58,0.91,0.13,NORMAL,+91-9857670435
+SCH-1097,"Model Govt School, Doddaballapur Block-2",13.213219,77.538301,35,0.67,0.16,NORMAL,+91-9819182350
+SCH-1098,"Model Govt School, Ramanagara Block-6",13.216618,77.559809,67,0.7,0.21,NORMAL,+91-9841783372
+SCH-1099,"Govt High School, Ramanagara Block-7",13.202412,77.517243,385,0.73,0.75,CRITICAL,+91-9866046839
+SCH-1100,"Zilla Parishad School, Ramanagara Block-5",13.120383,77.629351,50,0.71,0.17,NORMAL,+91-9885363528

@@ -1,52 +1,87 @@
 import pandas as pd
+import numpy as np
 import random
 
-# Generate 50 dummy schools in a specific district (e.g., Bangalore Rural)
-def generate_data():
-    data = []  # FIXED: properly indented
+def generate_data(num_schools=100):
+    print("🔄 Generating synthetic government school data...")
 
-    # Approx Lat/Lon for Bangalore Rural
-    base_lat = 13.2
-    base_lon = 77.5
+    # Center coordinates (Bangalore Rural context)
+    base_lat = 13.20
+    base_lon = 77.55
 
-    zones = ["North", "South", "East", "West", "Central"]
+    # Initialize containers (FIXED)
+    schools_data = []
 
-    for i in range(1, 51):
-        # Random coordinates (~10 km radius)
-        school_lat = base_lat + random.uniform(-0.05, 0.05)
-        school_lon = base_lon + random.uniform(-0.05, 0.05)
+    # List of realistic school prefixes to make data look authentic (FIXED)
+    prefixes = [
+        "Govt High School",
+        "Govt Primary School",
+        "Zilla Parishad School",
+        "Model Govt School",
+        "Adarsha Vidyalaya"
+    ]
 
-        # Random student count
-        total_students = random.randint(100, 500)
+    towns = [
+        "Devanahalli",
+        "Doddaballapur",
+        "Hoskote",
+        "Nelamangala",
+        "Magadi",
+        "Ramanagara"
+    ]
 
-        # 30% high‑risk schools
-        if random.random() < 0.3:
-            pending_mbu = random.randint(50, 150)
-            risk_level = "High"
+    for i in range(1, num_schools + 1):
+        # 1. Create Realistic Location (Clustered)
+        lat_offset = random.uniform(-0.08, 0.08)
+        lon_offset = random.uniform(-0.08, 0.08)
+
+        # 2. Generate Core Metrics
+        # Backlog: How many students need updates (10 to 300)
+        if random.random() < 0.2:
+            backlog = random.randint(150, 400)
         else:
-            pending_mbu = random.randint(0, 20)
-            risk_level = "Low"
+            backlog = random.randint(10, 80)
+
+        # Gender Parity Index (GPI)
+        gpi = round(random.uniform(0.65, 1.1), 2)
+
+        # 3. Calculate Priority Score
+        norm_backlog = min(backlog / 400, 1.0)
+        risk_gpi = max(0, 1.0 - gpi)
+
+        priority_score = (norm_backlog * 0.7) + (risk_gpi * 0.3)
+        priority_score = round(priority_score, 2)
+
+        # 4. Determine Status
+        if priority_score > 0.4 or backlog > 150:
+            status = "CRITICAL"
+        else:
+            status = "NORMAL"
 
         school = {
-            "school_id": f"SCH-{1000 + i}",
-            "school_name": f"Govt High School, Zone {random.choice(zones)} - {i}",
-            "lat": round(school_lat, 6),
-            "lon": round(school_lon, 6),
-            "total_students": total_students,
-            "pending_mbu": pending_mbu,
-            "risk_level": risk_level
+            "school_id": f"SCH-{1000+i}",
+            "school_name": f"{random.choice(prefixes)}, {random.choice(towns)} Block-{random.randint(1,9)}",
+            "latitude": round(base_lat + lat_offset, 6),
+            "longitude": round(base_lon + lon_offset, 6),
+            "backlog_students": backlog,
+            "gender_parity_index": gpi,
+            "priority_score": priority_score,
+            "status": status,
+            "contact_number": f"+91-98{random.randint(10000000, 99999999)}"
         }
 
-        data.append(school)
+        schools_data.append(school)
 
-    # Convert to DataFrame
-    df = pd.DataFrame(data)
+    # Create DataFrame
+    df = pd.DataFrame(schools_data)
 
     # Save to CSV
-    df.to_csv("mock_school_data.csv", index=False)
+    filename = "mock_school_data.csv"
+    df.to_csv(filename, index=False)
 
-    print("✅ Success! Generated 'mock_school_data.csv' with 50 schools.")
-    print(df.head())
+    print(f"✅ Success! Generated {filename} with {num_schools} schools.")
+    print(f" - Critical Schools: {len(df[df['status']=='CRITICAL'])}")
+    print(f" - Columns: {list(df.columns)}")
 
 if __name__ == "__main__":
     generate_data()
