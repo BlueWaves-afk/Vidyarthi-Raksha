@@ -82,7 +82,7 @@ def load_data():
             "backlog_students": np.random.randint(10, 200, n),
             "gender_parity_index": np.random.uniform(0.7, 1.1, n)
         })
-        df['risk_level'] = np.where(df['backlog_students']>100, 'CRITICAL', 'NORMAL')
+        df['status'] = np.where(df['backlog_students']>100, 'CRITICAL', 'NORMAL')
     
     # Ensure columns exist for the map
     if 'priority_score' not in df.columns:
@@ -141,7 +141,7 @@ tab1, tab2, tab3 = st.tabs(["📊 Executive Dashboard", "🚐 Route Optimizer", 
 with tab1:
     # KPI Row
     total_backlog = df['backlog_students'].sum()
-    critical_schools = df[df['risk_level'] == 'CRITICAL'].shape[0]
+    critical_schools = df[df['status'] == 'CRITICAL'].shape[0]
     est_days = int(total_backlog / (num_vans * capacity)) + 1
     
     c1, c2, c3, c4 = st.columns(4)
@@ -190,7 +190,7 @@ with tab2:
             
             # Visualize Routes (Plotly is better for lines than PyDeck)
             fig = px.scatter_mapbox(
-                df[df['risk_level']=='CRITICAL'], 
+                df[df['status']=='CRITICAL'], 
                 lat="latitude", lon="longitude", 
                 size="backlog_students", color="priority_score",
                 color_continuous_scale="reds", size_max=15, zoom=10,
