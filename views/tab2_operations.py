@@ -16,6 +16,7 @@ import pandas as pd
 import pydeck as pdk
 import numpy as np
 import math
+import time
 from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
 from millify import millify
@@ -213,7 +214,9 @@ def create_tactical_header(policy_mode: str = "balanced") -> None:
 
 
 def create_optimized_route_map(df: pd.DataFrame, routes: List[Dict], units: List[Dict], 
-                                policy_mode: str = "balanced") -> None:
+                                policy_mode: str = "balanced", 
+                                visible_routes: List[str] = None,
+                                simulation_progress: float = 0.0) -> None:
     """
     Render the CVRPTW visualization using PyDeck.
     
@@ -221,6 +224,10 @@ def create_optimized_route_map(df: pd.DataFrame, routes: List[Dict], units: List
     - PathLayer: Exact vehicle routes from optimization model
     - IconLayer/ScatterplotLayer: Mobile Enrollment Units with real-time positions
     - Tooltips: Route Efficiency Score, Predicted Students Covered
+    
+    Args:
+        visible_routes: List of vehicle_ids to display (None = show all)
+        simulation_progress: 0.0 to 1.0 for animation position
     """
     st.markdown("""
         <div style="
@@ -250,11 +257,17 @@ def create_optimized_route_map(df: pd.DataFrame, routes: List[Dict], units: List
     
     layers = []
     
+    # Filter routes based on visibility
+    if visible_routes is not None:
+        display_routes = [r for r in routes if r['vehicle_id'] in visible_routes]
+    else:
+        display_routes = routes
+    
     # ==========================================
     # LAYER 1: PathLayer - Vehicle Routes
     # ==========================================
-    if routes:
-        for route in routes:
+    if display_routes:
+        for route in display_routes:
             path_layer = pdk.Layer(
                 "PathLayer",
                 data=[{
@@ -311,55 +324,63 @@ def create_optimized_route_map(df: pd.DataFrame, routes: List[Dict], units: List
     layers.append(school_layer)
     
     # ==========================================
-    # LAYER 3: IconLayer - Mobile Enrollment Units
+    # LAYER 3: Mobile Enrollment Units (Animated Van Icons)
     # ==========================================
-    if units:
-        units_df = pd.DataFrame(units)
+    if units and display_routes:
+        # Filter units to only show visible routes
+        if visible_routes is not None:
+            display_units = [u for u in units if u['vehicle_id'] in visible_routes]
+        else:
+            display_units = units
         
-        # Main vehicle markers
-        unit_layer = pdk.Layer(
-            "ScatterplotLayer",
-            data=units_df,
-            get_position=["longitude", "latitude"],
-            get_fill_color="color",
-            get_line_color=[255, 255, 255],
-            get_radius=500,
-            pickable=True,
-            stroked=True,
-            filled=True,
-            line_width_min_pixels=3,
-            radius_min_pixels=10,
-            radius_max_pixels=25,
-        )
-        layers.append(unit_layer)
-        
-        # Pulse effect ring
-        pulse_layer = pdk.Layer(
-            "ScatterplotLayer",
-            data=units_df,
-            get_position=["longitude", "latitude"],
-            get_fill_color=[255, 255, 255, 40],
-            get_radius=1000,
-            pickable=False,
-            stroked=False,
-            filled=True,
-        )
-        layers.append(pulse_layer)
-        
-        # Vehicle labels
-        text_layer = pdk.Layer(
-            "TextLayer",
-            data=units_df,
-            get_position=["longitude", "latitude"],
-            get_text="vehicle_id",
-            get_size=14,
-            get_color=[255, 255, 255, 255],
-            get_angle=0,
-            get_text_anchor="'middle'",
-            get_alignment_baseline="'center'",
-            pickable=False,
-        )
-        layers.append(text_layer)
+        if display_units:
+            units_df = pd.DataFrame(display_units)
+            
+            # Van icon layer - larger marker for visibility
+            van_layer = pdk.Layer(
+                "ScatterplotLayer",
+                data=units_df,
+                get_position=["longitude", "latitude"],
+                get_fill_color="color",
+                get_line_color=[255, 255, 255],
+                get_radius=600,
+                pickable=True,
+                stroked=True,
+                filled=True,
+                line_width_min_pixels=3,
+                radius_min_pixels=12,
+                radius_max_pixels=30,
+            )
+            layers.append(van_layer)
+            
+            # Animated pulse ring effect
+            pulse_layer = pdk.Layer(
+                "ScatterplotLayer",
+                data=units_df,
+                get_position=["longitude", "latitude"],
+                get_fill_color=[255, 255, 255, 50],
+                get_radius=1200,
+                pickable=False,
+                stroked=False,
+                filled=True,
+            )
+            layers.append(pulse_layer)
+            
+            # Vehicle ID labels
+            text_layer = pdk.Layer(
+                "TextLayer",
+                data=units_df,
+                get_position=["longitude", "latitude"],
+                get_text="vehicle_id",
+                get_size=12,
+                get_color=[255, 255, 255, 255],
+                get_angle=0,
+                get_text_anchor="'middle'",
+                get_alignment_baseline="'center'",
+                pickable=False,
+                font_family="'Arial', sans-serif",
+            )
+            layers.append(text_layer)
     
     # ==========================================
     # LAYER 4: Depot Marker
@@ -434,35 +455,88 @@ def create_optimized_route_map(df: pd.DataFrame, routes: List[Dict], units: List
         }
     }
     
-    # Create deck
+    # Create deck - using "light" style (no Mapbox token required)
     deck = pdk.Deck(
         layers=layers,
         initial_view_state=view_state,
-        map_style="mapbox://styles/mapbox/light-v11",
+        map_style="light",
         tooltip=tooltip,
         height=500,
     )
     
     st.pydeck_chart(deck, use_container_width=True)
+
+
+def create_route_legend_controls(routes: List[Dict]) -> List[str]:
+    """
+    Create interactive legend with checkboxes to show/hide individual routes.
+    Returns list of visible vehicle_ids.
+    """
+    if not routes:
+        return []
     
-    # Route color legend
-    if routes:
-        route_colors_hex = {
-            0: "#ea580c",
-            1: "#3b82f6",
-            2: "#10b981",
-            3: "#9333ea",
-            4: "#ef4444",
-        }
-        
-        legend_items = []
-        for idx, route in enumerate(routes):
-            color = route_colors_hex.get(idx, "#6b7280")
-            legend_items.append(f'<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 24px; height: 4px; background: {color}; border-radius: 2px;"></div><span style="font-size: 0.75rem; color: #475569;">{route["vehicle_id"]}</span></div>')
-        
-        legend_html = f'''<div style="display: flex; align-items: center; justify-content: center; gap: 2rem; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 0.5rem;">{''.join(legend_items)}<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 12px; height: 12px; background: #ffd700; border-radius: 50%; border: 2px solid #000;"></div><span style="font-size: 0.75rem; color: #475569;">Depot</span></div></div>'''
-        
-        st.markdown(legend_html, unsafe_allow_html=True)
+    route_colors_hex = {
+        0: "#ea580c",
+        1: "#3b82f6",
+        2: "#10b981",
+        3: "#9333ea",
+        4: "#ef4444",
+    }
+    
+    st.markdown("""
+        <div style="
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            padding: 0.75rem 1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        ">
+            <div style="font-size: 0.75rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Route Visibility
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Initialize visibility state
+    if 'visible_routes' not in st.session_state:
+        st.session_state.visible_routes = [r['vehicle_id'] for r in routes]
+    
+    # Create checkbox columns
+    cols = st.columns(len(routes) + 1)  # +1 for depot
+    
+    visible = []
+    for idx, route in enumerate(routes):
+        color = route_colors_hex.get(idx, "#6b7280")
+        with cols[idx]:
+            # Custom styled checkbox label
+            st.markdown(f"""
+                <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: -0.5rem;">
+                    <div style="width: 20px; height: 4px; background: {color}; border-radius: 2px;"></div>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            is_visible = st.checkbox(
+                route['vehicle_id'],
+                value=route['vehicle_id'] in st.session_state.visible_routes,
+                key=f"route_vis_{route['vehicle_id']}"
+            )
+            if is_visible:
+                visible.append(route['vehicle_id'])
+    
+    # Depot indicator (always shown)
+    with cols[-1]:
+        st.markdown("""
+            <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: -0.5rem;">
+                <div style="width: 12px; height: 12px; background: #ffd700; border-radius: 50%; border: 2px solid #000;"></div>
+            </div>
+        """, unsafe_allow_html=True)
+        st.markdown("<span style='font-size: 0.8rem; color: #475569;'>Depot</span>", unsafe_allow_html=True)
+    
+    # Update session state
+    st.session_state.visible_routes = visible
+    
+    return visible
 
 
 # ==========================================
@@ -745,10 +819,12 @@ def render_tab2(df: pd.DataFrame, num_vans: int = 3, policy_mode: str = "balance
     
     Layout:
     1. Tactical Header with policy mode indicator
-    2. Optimized Route Map (PyDeck CVRPTW visualization)
-    3. Route Summary & Feasibility Cards
-    4. Enrollment Process Tracker (sac.steps)
-    5. Vehicle Schedule Timeline
+    2. Simulation controls with Start/Stop button
+    3. Interactive route legend (show/hide routes)
+    4. Optimized Route Map (PyDeck CVRPTW visualization)
+    5. Route Summary & Feasibility Cards
+    6. Enrollment Process Tracker (sac.steps)
+    7. Vehicle Schedule Timeline
     
     Args:
         df: DataFrame with school data
@@ -758,32 +834,209 @@ def render_tab2(df: pd.DataFrame, num_vans: int = 3, policy_mode: str = "balance
     # Tactical header
     create_tactical_header(policy_mode)
     
-    # Progress slider for simulation
-    col1, col2 = st.columns([3, 1])
-    with col2:
-        progress = st.slider(
-            "Route Progress",
-            min_value=0.0,
-            max_value=1.0,
-            value=0.3,
-            step=0.1,
-            format="%.0f%%",
-            help="Simulate route progress",
-            key="tactical_progress"
-        )
-    
     # Generate routes for current policy mode
     cache = get_scenario_cache()
     cache.precompute_all(df, num_vans)
     routes = cache.get_routes(policy_mode)
-    units = generate_mobile_unit_positions(routes, progress)
     
     if not routes:
-        st.warning("⚠️ No routes generated. Adjust fleet configuration in sidebar.")
+        st.warning("No routes generated. Adjust fleet configuration in sidebar.")
         return
     
-    # SECTION 1: Optimized Route Map
-    create_optimized_route_map(df, routes, units, policy_mode)
+    # ==========================================
+    # SIMULATION CONTROLS
+    # ==========================================
+    
+    # Initialize simulation state
+    if 'simulation_running' not in st.session_state:
+        st.session_state.simulation_running = False
+    if 'simulation_progress' not in st.session_state:
+        st.session_state.simulation_progress = 0.0
+    
+    # Real-time tracking control panel
+    st.markdown("""
+        <div style="
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+        ">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1rem; font-weight: 600; color: #1e293b;">Real-Time Unit Tracking</span>
+                <span style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background: #e2e8f0;
+                    color: #64748b;
+                    font-size: 0.65rem;
+                    font-weight: 700;
+                    cursor: help;
+                " title="For demo purposes, this is a simulation of real-time GPS tracking. In production, this would connect to live vehicle telemetry.">?</span>
+            </div>
+            <div style="font-size: 0.75rem; color: #64748b;">
+                Visualize mobile enrollment units traveling along optimized routes
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Custom button styling - professional grey tone, no glow/shadow
+    st.markdown("""
+        <style>
+            div.stButton > button {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 8px !important;
+                color: #475569 !important;
+                font-weight: 600 !important;
+                padding: 0.5rem 1rem !important;
+                height: 72px !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+            div.stButton > button:hover {
+                background: #f1f5f9 !important;
+                border-color: #cbd5e1 !important;
+                color: #1e293b !important;
+                box-shadow: none !important;
+            }
+            div.stButton > button:focus {
+                box-shadow: none !important;
+                outline: none !important;
+            }
+            div.stButton > button:active {
+                box-shadow: none !important;
+            }
+            div.stButton > button[kind="primary"],
+            div.stButton > button[kind="secondary"] {
+                background: #f8fafc !important;
+                border: 1px solid #e2e8f0 !important;
+                color: #475569 !important;
+                box-shadow: none !important;
+            }
+            div.stButton > button[kind="primary"]:hover,
+            div.stButton > button[kind="secondary"]:hover {
+                background: #f1f5f9 !important;
+                box-shadow: none !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    progress_pct = int(st.session_state.simulation_progress * 100)
+    
+    with col1:
+        # Start/Stop simulation button
+        if st.session_state.simulation_running:
+            if st.button("Stop Simulation", use_container_width=True, type="secondary", key="stop_btn"):
+                st.session_state.simulation_running = False
+                st.rerun()
+        else:
+            if st.button("Start Simulation", use_container_width=True, type="primary", key="start_btn"):
+                st.session_state.simulation_running = True
+                st.session_state.simulation_progress = 0.0
+                st.rerun()
+    
+    with col2:
+        # Reset button
+        if st.button("Reset Progress", use_container_width=True, key="reset_btn"):
+            st.session_state.simulation_running = False
+            st.session_state.simulation_progress = 0.0
+            st.rerun()
+    
+    with col3:
+        # Progress indicator - same height as buttons
+        st.markdown(f"""
+            <div style="
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 0.5rem 1rem;
+                text-align: center;
+                height: 72px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                box-sizing: border-box;
+            ">
+                <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Progress</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #475569;">{progress_pct}%</div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        # Status indicator - same height as buttons
+        if st.session_state.simulation_running:
+            status_text = "RUNNING"
+        elif progress_pct > 0:
+            status_text = "PAUSED"
+        else:
+            status_text = "READY"
+        
+        st.markdown(f"""
+            <div style="
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 0.5rem 1rem;
+                text-align: center;
+                height: 72px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                box-sizing: border-box;
+            ">
+                <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Status</div>
+                <div style="font-size: 1.25rem; font-weight: 700; color: #475569;">{status_text}</div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    # ==========================================
+    # ROUTE LEGEND WITH VISIBILITY CONTROLS
+    # ==========================================
+    visible_routes = create_route_legend_controls(routes)
+    
+    # If no routes visible, show all
+    if not visible_routes:
+        visible_routes = [r['vehicle_id'] for r in routes]
+    
+    # ==========================================
+    # SIMULATION ANIMATION LOOP
+    # ==========================================
+    progress = st.session_state.simulation_progress
+    
+    # Generate unit positions for current progress
+    units = generate_mobile_unit_positions(routes, progress)
+    
+    # Create map placeholder for animation updates
+    map_placeholder = st.empty()
+    
+    # If simulation is running, animate
+    if st.session_state.simulation_running:
+        # Render map with current progress
+        with map_placeholder.container():
+            create_optimized_route_map(df, routes, units, policy_mode, visible_routes, progress)
+        
+        # Increment progress
+        time.sleep(0.3)  # Animation frame delay
+        st.session_state.simulation_progress = min(1.0, progress + 0.02)
+        
+        # Stop at 100%
+        if st.session_state.simulation_progress >= 1.0:
+            st.session_state.simulation_running = False
+            st.balloons()
+        
+        st.rerun()
+    else:
+        # Static map when not simulating
+        with map_placeholder.container():
+            create_optimized_route_map(df, routes, units, policy_mode, visible_routes, progress)
+    
     st.markdown("<br>", unsafe_allow_html=True)
     
     # SECTION 2: Route Summary & Feasibility Cards
