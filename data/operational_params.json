@@ -1,0 +1,9 @@
+{
+  "number_of_vehicles": 2,
+  "vehicle_capacity": 80,
+  "working_hours_min": 420,
+  "avg_speed_kmph": 30,
+  "start_lat": 12.9716,
+  "start_lon": 77.5946,
+  "priority_mode": "balanced"
+}

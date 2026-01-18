@@ -86,6 +86,22 @@ st.markdown("""
         width: 320px;
         padding: 0 !important;
         margin: 0 !important;
+        flex-shrink: 0 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateX(0) !important;
+    }
+
+    /* Disable Streamlit's collapse toggle for fixed government sidebar */
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarNav"] button[aria-label="Hide sidebar"],
+    [data-testid="stSidebarNav"] button[aria-label="Show sidebar"] {
+        display: none !important;
+    }
+
+    /* Remove collapsed placeholder entirely */
+    [data-testid="stSidebarCollapsed"] {
+        display: none !important;
     }
 
     [data-testid="stSidebarContent"] {
@@ -639,7 +655,7 @@ with st.sidebar:
         st.session_state.policy_mode = "balanced"
     
     # Enterprise-grade segmented control using SAC
-    policy_mode = sac.segmented(
+    policy_mode_selection = sac.segmented(
         items=[
             sac.SegmentedItem(label="Efficiency", icon="lightning-charge"),
             sac.SegmentedItem(label="Balanced", icon="sliders"),
@@ -651,12 +667,16 @@ with st.sidebar:
         radius="lg",
         use_container_width=True,
         key="policy_mode_selector",
+        return_index=True,
     )
     
-    # Map selection to mode
-    policy_mode_map = {0: "efficiency", 1: "balanced", 2: "equity"}
-    if policy_mode is not None:
-        st.session_state.policy_mode = policy_mode_map.get(policy_mode, "balanced")
+    # Map index to mode string
+    policy_index_map = {0: "efficiency", 1: "balanced", 2: "equity"}
+    if policy_mode_selection is not None:
+        new_mode = policy_index_map.get(policy_mode_selection, "balanced")
+        if new_mode != st.session_state.policy_mode:
+            st.session_state.policy_mode = new_mode
+            st.rerun()
     
     current_mode = st.session_state.policy_mode
     
@@ -857,13 +877,23 @@ with st.sidebar:
     
     st.divider()
     
-    # Status panel
-    st.markdown("<div class='scenario-label'>System Status</div>", unsafe_allow_html=True)
-    col_status1, col_status2 = st.columns(2)
-    with col_status1:
-        st.metric("Version", "2.0.1")
-    with col_status2:
-        st.metric("Status", "Active")
+    # Status panel - smaller, grey text
+    st.markdown("""
+        <div style="
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0.25rem;
+        ">
+            <div>
+                <div style="font-size: 0.6rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em;">Version</div>
+                <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 500;">1.0.0</div>
+            </div>
+            <div>
+                <div style="font-size: 0.6rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em;">Status</div>
+                <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 500;">Active</div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 # ==========================================
 # 5. LOAD DATA

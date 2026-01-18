@@ -128,11 +128,98 @@ views/tab1_command.py              # Strategic Command Center
 views/tab2_operations.py           # Tactical Operations
 views/tab3_intelligence.py         # Analytical Intelligence
 core/data_engine.py                # Digital twin generator (Phase 2)
-core/optimization.py               # RouteOptimizer (Phase 3)
-PHASE4_*                           # Phase 4 documentation set
-DIGITAL_TWIN_DOCUMENTATION.md      # Phase 2 data methodology
-ROUTE_OPTIMIZATION_DOCUMENTATION.md# Phase 3 solver details
+core/optimization.py               # RouteOptimizer CVRPTW (Phase 3)
+core/test_optimization.py          # Pytest suite for optimizer validation
+core/validate_digital_twin.py      # Data quality validation script
+data/precomputed_scenarios.py      # Real-time scenario cache (connects optimizer to UI)
 requirements.txt                   # Python deps
+```
+
+## Core Module Reference
+
+### `core/data_engine.py` — Digital Twin Data Generator
+Generates synthetic but realistic school enrollment data for Jharkhand, India.
+
+| Feature | Description |
+|---------|-------------|
+| **Schools** | N schools with realistic names, coordinates (within Jharkhand bounds), categories (70% rural / 30% urban) |
+| **Enrollment Metrics** | `total_students`, `enrolled_students`, `backlog_students`, `saturation_rate` |
+| **Equity Metrics** | `gender_parity_index` (GPI), `equity_risk` flag for schools with GPI < 0.90 |
+| **Access Metrics** | `distance_to_center_km`, `access_risk_score` (0–100 based on distance + rural penalty) |
+| **Zone Classification** | Labels schools as "Safe Zone", "Moderate Zone", or "Dark Zone" based on risk score |
+| **Priority Scoring** | Combines backlog weight (60%) + equity risk (25%) + access risk (15%) |
+
+**Key Functions:**
+- `generate_digital_twin_dataset(n_schools, seed)` → Returns a DataFrame
+- `get_dataset_summary(df)` → Returns summary statistics dict
+- `identify_priority_clusters(df, top_n)` → Returns highest priority schools
+- `ENROLLMENT_CENTERS` → List of 5 fixed Aadhaar enrollment centers in Jharkhand
+
+---
+
+### `core/test_optimization.py` — Route Optimizer Test Suite
+Pytest-based validation that the CVRPTW route optimization algorithm works correctly.
+
+| Test | What It Validates |
+|------|-------------------|
+| Basic Route Generation | Optimizer returns routes list with required fields |
+| Capacity Constraints | No route exceeds `max_capacity` (150 students) |
+| Time Constraints | No route exceeds `max_time_minutes` (480 min = 8 hours) |
+| Vehicle Count | Number of routes ≤ requested vehicles |
+| School Coverage | All schools are assigned to exactly one route |
+| Route Paths | Each route has valid lat/lon path starting/ending at depot |
+| Priority Scoring | Higher backlog/risk schools get higher priority scores |
+| Distance Calculations | Haversine formula produces correct distances |
+
+**Run tests:**
+```bash
+python -m pytest core/test_optimization.py -v
+```
+
+---
+
+### `core/validate_digital_twin.py` — Data Quality Validation Script
+Interactive script to validate and explore the generated digital twin data.
+
+| Section | Output |
+|---------|--------|
+| Sample Records | First 5 schools with all fields |
+| Summary Statistics | Total schools, backlog, saturation, GPI averages |
+| Rural vs Urban Analysis | Comparison of metrics between categories |
+| Enrollment Centers | Lists the 5 fixed Aadhaar centers |
+| Top 10 Priority Schools | Highest intervention urgency schools |
+| Data Distribution | Min/max/mean/std for backlog, saturation, GPI, access risk |
+| Zone Breakdown | Count of Safe/Moderate/Dark Zone schools |
+| Critical Insights | High-risk combinations (backlog + equity, rural + dark zone) |
+| Export | Saves dataset to `data/digital_twin_schools.csv` |
+
+**Run validation:**
+```bash
+python core/validate_digital_twin.py
+```
+
+---
+
+### Data Flow Diagram
+```
+┌─────────────────────────────────────────────────────────────┐
+│  data_engine.py                                              │
+│  └─► generate_digital_twin_dataset()                        │
+│           │                                                  │
+│           ├──────► validate_digital_twin.py (QA & export)   │
+│           │                                                  │
+│           └──────► app.py (Dashboard UI)                    │
+│                         │                                    │
+│                         ▼                                    │
+│               precomputed_scenarios.py                       │
+│                    └─► ScenarioCache calls RouteOptimizer   │
+│                              │                               │
+│                              ▼                               │
+│                      optimization.py (CVRPTW algorithm)     │
+│                              │                               │
+│                              ▼                               │
+│                    test_optimization.py (validates algo)    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## Validation & Success Metrics
@@ -142,13 +229,7 @@ requirements.txt                   # Python deps
 - **Scalability** – Cached datasets & singleton optimizers minimize reruns; responsive layout works across breakpoints.
 
 ## Documentation Index
-| Audience | Reference |
-| --- | --- |
-| End users & field teams | [PHASE4_QUICK_START.md](./PHASE4_QUICK_START.md) |
-| Product / delivery leads | [PHASE4_IMPLEMENTATION_SUMMARY.md](./PHASE4_IMPLEMENTATION_SUMMARY.md) |
-| UI/UX & component specs | [PHASE4_INTERFACE_DOCUMENTATION.md](./PHASE4_INTERFACE_DOCUMENTATION.md) |
-| Data science | [DIGITAL_TWIN_DOCUMENTATION.md](./DIGITAL_TWIN_DOCUMENTATION.md), [ROUTE_OPTIMIZATION_DOCUMENTATION.md](./ROUTE_OPTIMIZATION_DOCUMENTATION.md) |
-| Environment setup | [PROJECT_SETUP.md](./PROJECT_SETUP.md) |
+This README is now the single source of truth. Older phase-specific markdown files were removed to keep the repository lightweight, so all operating procedures, architecture notes, and setup guidance have been consolidated here.
 
 ## Roadmap
 - 🔄 Multi-depot & heterogeneous vehicle support
@@ -157,4 +238,4 @@ requirements.txt                   # Python deps
 - 📱 Field-team mobile companion & PDF manifest export
 - ☁️ Streamlit Cloud or Azure App Service deployment playbook
 
-For questions, open an issue or consult the documentation listed above. Vidyarthi-Raksha is ready for judge demos and real-world pilots alike.
+For questions or clarifications, open an issue referencing the sections in this README. Vidyarthi-Raksha is ready for judge demos and real-world pilots alike.

@@ -1,31 +1,77 @@
 """
-Precomputed Scenario Data for 3D Visualization
-==============================================
-Generates and caches route scenarios for instant map rendering.
-Prevents "Spinning Wheel of Death" during live demonstrations.
+Scenario Cache for Policy-Aware Routing
+=======================================
+Provides REAL route optimization using the CVRPTW algorithm from core/optimization.py.
+Routes are computed on-demand for different policy modes (efficiency/balanced/equity).
 
-Scenarios:
-- efficiency: Optimized for minimal travel distance
-- equity: Prioritizes high-risk/underserved regions
-- balanced: Equal weight on efficiency and equity
+This replaces the previous stub implementation with actual algorithmic routing.
 """
 
 import pandas as pd
 import numpy as np
-import json
-from pathlib import Path
-from typing import Dict, List, Tuple
 import math
+import sys
+from pathlib import Path
+from typing import Dict, List, Optional
+
+# Add parent directory to path for imports
+_parent_dir = str(Path(__file__).parent.parent)
+if _parent_dir not in sys.path:
+    sys.path.insert(0, _parent_dir)
+
+# Import the REAL optimizer
+from core.optimization import RouteOptimizer, haversine_distance
 
 
 # ==========================================
-# ROUTE GENERATION FOR SCENARIOS
+# SCENARIO CONFIGURATION
+# ==========================================
+
+SCENARIO_CONFIG = {
+    "efficiency": {
+        "name": "Maximum Efficiency",
+        "description": "Optimized for minimal travel distance and fuel consumption",
+        "backlog_weight": 0.3,
+        "access_weight": 0.7,
+        "max_capacity": 180,  # Higher capacity utilization
+        "color": "#3b82f6",
+    },
+    "balanced": {
+        "name": "Balanced Approach", 
+        "description": "Equal weight on backlog clearance and geographic access",
+        "backlog_weight": 0.5,
+        "access_weight": 0.5,
+        "max_capacity": 150,
+        "color": "#f59e0b",
+    },
+    "equity": {
+        "name": "Equity Priority",
+        "description": "Prioritizes underserved Dark Zones with high access barriers",
+        "backlog_weight": 0.8,
+        "access_weight": 0.2,
+        "max_capacity": 120,  # Lower capacity to reach more remote areas
+        "color": "#10b981",
+    },
+}
+
+# Route colors for visualization
+ROUTE_COLORS = [
+    [234, 88, 12, 220],    # Orange - VAN-001
+    [59, 130, 246, 220],   # Blue - VAN-002
+    [16, 185, 129, 220],   # Green - VAN-003
+    [147, 51, 234, 220],   # Purple - VAN-004
+    [239, 68, 68, 220],    # Red - VAN-005
+]
+
+
+# ==========================================
+# REAL ROUTE GENERATION (Using Optimizer)
 # ==========================================
 
 def generate_demo_routes(df: pd.DataFrame, num_vehicles: int = 3, 
                          scenario: str = "balanced") -> List[Dict]:
     """
-    Generate pre-computed routes for different optimization scenarios.
+    Generate routes using the REAL CVRPTW optimizer.
     
     Args:
         df: School dataframe with lat/lon, backlog, access_risk_score
@@ -33,119 +79,88 @@ def generate_demo_routes(df: pd.DataFrame, num_vehicles: int = 3,
         scenario: "efficiency", "equity", or "balanced"
     
     Returns:
-        List of route dictionaries with path coordinates
+        List of route dictionaries with path coordinates for visualization
     """
-    # Filter schools with backlog
-    schools = df[df['backlog_students'] > 0].copy()
+    config = SCENARIO_CONFIG.get(scenario, SCENARIO_CONFIG["balanced"])
     
-    if len(schools) == 0:
-        return []
+    # Create optimizer with scenario-specific settings
+    optimizer = RouteOptimizer(
+        depot_lat=df['latitude'].mean(),  # Use centroid as depot
+        depot_lon=df['longitude'].mean(),
+        max_capacity=config["max_capacity"],
+        max_time_minutes=480  # 8 hours
+    )
     
-    # Set priority weights based on scenario
-    weights = {
-        "efficiency": (0.3, 0.7),   # Low backlog weight, high proximity
-        "equity": (0.8, 0.2),       # High backlog weight, low proximity
-        "balanced": (0.5, 0.5),     # Equal weights
-    }
+    # Modify priority calculation based on scenario weights
+    # We'll pre-process the data to adjust priority scoring
+    schools_df = df.copy()
     
-    backlog_w, access_w = weights.get(scenario, (0.5, 0.5))
+    # Apply scenario-specific weighting
+    backlog_w = config["backlog_weight"]
+    access_w = config["access_weight"]
     
-    # Normalize scores
-    schools['norm_backlog'] = schools['backlog_students'] / schools['backlog_students'].max()
-    schools['norm_access'] = schools['access_risk_score'] / 100
-    
-    # Calculate priority
-    schools['priority'] = (backlog_w * schools['norm_backlog'] + 
-                          access_w * schools['norm_access'])
-    
-    # Sort by priority
-    schools = schools.sort_values('priority', ascending=False)
-    
-    # Depot location (Bengaluru central)
-    depot_lat, depot_lon = 13.1939, 77.5941
-    
-    # Simple cluster assignment (round-robin by priority)
-    schools['vehicle'] = [i % num_vehicles for i in range(len(schools))]
-    
-    routes = []
-    route_colors = [
-        [234, 88, 12, 220],    # Orange - VAN-001
-        [59, 130, 246, 220],   # Blue - VAN-002
-        [16, 185, 129, 220],   # Green - VAN-003
-        [147, 51, 234, 220],   # Purple - VAN-004
-        [239, 68, 68, 220],    # Red - VAN-005
-    ]
-    
-    for v_id in range(num_vehicles):
-        vehicle_schools = schools[schools['vehicle'] == v_id]
+    # Normalize and create weighted priority
+    if 'backlog_students' in schools_df.columns and schools_df['backlog_students'].max() > 0:
+        schools_df['norm_backlog'] = schools_df['backlog_students'] / schools_df['backlog_students'].max()
+    else:
+        schools_df['norm_backlog'] = 0
         
-        if len(vehicle_schools) == 0:
-            continue
-        
-        # Build path: depot -> schools -> depot
+    if 'access_risk_score' in schools_df.columns:
+        schools_df['norm_access'] = schools_df['access_risk_score'] / 100
+    else:
+        schools_df['norm_access'] = 0.5
+    
+    # Weighted priority - higher means more important
+    schools_df['weighted_priority'] = (
+        backlog_w * schools_df['norm_backlog'] + 
+        access_w * schools_df['norm_access']
+    )
+    
+    # Sort by weighted priority for clustering input
+    schools_df = schools_df.sort_values('weighted_priority', ascending=False)
+    
+    # Run the REAL optimizer
+    routes_data = optimizer.optimize_routes(schools_df, num_vehicles)
+    
+    # Convert to visualization format with paths for PyDeck
+    viz_routes = []
+    depot_lat, depot_lon = optimizer.depot_lat, optimizer.depot_lon
+    
+    for i, route in enumerate(routes_data):
+        # Build path coordinates for PyDeck PathLayer (lon, lat format)
         path_coords = [[depot_lon, depot_lat]]  # Start at depot
         
-        total_students = 0
-        total_distance = 0
-        school_list = []
+        for school in route['schools']:
+            path_coords.append([school['longitude'], school['latitude']])
         
-        prev_lat, prev_lon = depot_lat, depot_lon
-        
-        for _, school in vehicle_schools.iterrows():
-            lat, lon = school['latitude'], school['longitude']
-            path_coords.append([lon, lat])
-            
-            # Calculate distance
-            dist = haversine_km(prev_lat, prev_lon, lat, lon)
-            total_distance += dist
-            total_students += school['backlog_students']
-            
-            school_list.append({
-                "school_id": school.get('school_id', ''),
-                "school_name": school.get('school_name', f"School {len(school_list)+1}"),
-                "latitude": lat,
-                "longitude": lon,
-                "backlog": int(school['backlog_students']),
-                "access_risk": int(school['access_risk_score']),
-                "zone": school.get('zone_label', 'Unknown'),
-            })
-            
-            prev_lat, prev_lon = lat, lon
-        
-        # Return to depot
-        path_coords.append([depot_lon, depot_lat])
-        total_distance += haversine_km(prev_lat, prev_lon, depot_lat, depot_lon)
+        path_coords.append([depot_lon, depot_lat])  # Return to depot
         
         # Calculate efficiency score
-        efficiency_score = min(100, int((total_students / max(total_distance, 1)) * 10))
+        total_dist = route['total_distance_km']
+        total_students = route['total_students']
+        efficiency_score = min(100, int((total_students / max(total_dist, 1)) * 10))
         
-        route = {
-            "vehicle_id": f"VAN-{v_id + 1:03d}",
+        viz_route = {
+            "vehicle_id": route['vehicle_id'],
             "path": path_coords,
-            "color": route_colors[v_id % len(route_colors)],
-            "total_students": int(total_students),
-            "total_distance_km": round(total_distance, 2),
-            "num_schools": len(school_list),
-            "schools": school_list,
+            "color": ROUTE_COLORS[i % len(ROUTE_COLORS)],
+            "total_students": route['total_students'],
+            "total_distance_km": route['total_distance_km'],
+            "total_time_minutes": route['total_time_minutes'],
+            "num_schools": route['num_schools'],
+            "schools": route['schools'],
             "efficiency_score": efficiency_score,
             "scenario": scenario,
         }
         
-        routes.append(route)
+        viz_routes.append(viz_route)
     
-    return routes
+    return viz_routes
 
 
-def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Calculate great-circle distance in kilometers."""
-    R = 6371
-    lat1_r, lat2_r = math.radians(lat1), math.radians(lat2)
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-    
-    a = math.sin(dlat/2)**2 + math.cos(lat1_r) * math.cos(lat2_r) * math.sin(dlon/2)**2
-    return R * 2 * math.asin(math.sqrt(a))
-
+# ==========================================
+# MOBILE UNIT POSITIONS
+# ==========================================
 
 def generate_mobile_unit_positions(routes: List[Dict], progress: float = 0.3) -> List[Dict]:
     """
@@ -156,12 +171,12 @@ def generate_mobile_unit_positions(routes: List[Dict], progress: float = 0.3) ->
         progress: Fraction of route completed (0-1)
     
     Returns:
-        List of unit position dictionaries for IconLayer
+        List of unit position dictionaries for visualization
     """
     units = []
     
     for route in routes:
-        path = route['path']
+        path = route.get('path', [])
         if len(path) < 2:
             continue
         
@@ -189,12 +204,16 @@ def generate_mobile_unit_positions(routes: List[Dict], progress: float = 0.3) ->
             "students_total": route['total_students'],
             "schools_visited": int(route['num_schools'] * progress),
             "schools_total": route['num_schools'],
-            "efficiency_score": route['efficiency_score'],
-            "color": route['color'],
+            "efficiency_score": route.get('efficiency_score', 75),
+            "color": route.get('color', [234, 88, 12, 220]),
         })
     
     return units
 
+
+# ==========================================
+# HEXAGON DATA FOR 3D MAP
+# ==========================================
 
 def get_hexagon_data(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -206,93 +225,98 @@ def get_hexagon_data(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         DataFrame with columns for HexagonLayer
     """
-    hex_df = df[['latitude', 'longitude', 'backlog_students', 
-                 'access_risk_score', 'zone_label']].copy()
-    hex_df = hex_df.dropna()
+    required_cols = ['latitude', 'longitude', 'backlog_students', 'access_risk_score', 'zone_label']
+    available_cols = [c for c in required_cols if c in df.columns]
+    
+    hex_df = df[available_cols].copy()
+    hex_df = hex_df.dropna(subset=['latitude', 'longitude'])
     
     # Compute elevation weight (for 3D height)
-    max_backlog = hex_df['backlog_students'].max()
-    hex_df['elevation_weight'] = hex_df['backlog_students'] / max_backlog * 100
-    
-    # Compute color mapping (red = high risk, green = low risk)
-    def risk_to_color(risk_score):
-        """Map risk score (0-100) to RGB color."""
-        # Red (high risk) -> Yellow (medium) -> Green (low risk)
-        if risk_score >= 70:
-            # Dark Zone - Red
-            return [220, 38, 38, 200]
-        elif risk_score >= 40:
-            # Moderate Zone - Orange/Yellow
-            r = int(245)
-            g = int(158 - (risk_score - 40) * 2)
-            return [r, g, 11, 200]
+    if 'backlog_students' in hex_df.columns:
+        max_backlog = hex_df['backlog_students'].max()
+        if max_backlog > 0:
+            hex_df['elevation_weight'] = hex_df['backlog_students'] / max_backlog * 100
         else:
-            # Accessible Zone - Green
-            return [22, 163, 74, 200]
-    
-    hex_df['color'] = hex_df['access_risk_score'].apply(risk_to_color)
+            hex_df['elevation_weight'] = 0
+    else:
+        hex_df['elevation_weight'] = 50
     
     return hex_df
 
 
 # ==========================================
-# SCENARIO CACHE
+# SCENARIO CACHE (Real Optimization)
 # ==========================================
 
 class ScenarioCache:
     """
-    Cache for pre-computed scenarios.
-    Enables instant visualization switching without recalculation.
+    Cache for optimized route scenarios.
+    Uses the REAL CVRPTW optimizer from core/optimization.py.
     """
     
     def __init__(self):
-        self.scenarios = {}
-        self.routes = {}
-        self.units = {}
+        self.routes: Dict[str, List[Dict]] = {}
+        self.units: Dict[str, List[Dict]] = {}
+        self._df: Optional[pd.DataFrame] = None
+        self._num_vehicles: int = 3
     
     def precompute_all(self, df: pd.DataFrame, num_vehicles: int = 3):
-        """Precompute all scenarios for the given data."""
-        for scenario in ["efficiency", "equity", "balanced"]:
+        """
+        Precompute all scenarios using the REAL optimizer.
+        
+        Args:
+            df: School dataframe
+            num_vehicles: Number of mobile units
+        """
+        self._df = df.copy()
+        self._num_vehicles = num_vehicles
+        
+        for scenario in ["efficiency", "balanced", "equity"]:
+            # Generate REAL routes using the optimizer
             routes = generate_demo_routes(df, num_vehicles, scenario)
             self.routes[scenario] = routes
+            
+            # Generate initial unit positions
             self.units[scenario] = generate_mobile_unit_positions(routes, 0.3)
-        
-        self.scenarios = {
-            "efficiency": {
-                "name": "Maximum Efficiency",
-                "description": "Optimized for minimal travel distance and fuel consumption",
-                "weight_backlog": 0.3,
-                "weight_access": 0.7,
-            },
-            "equity": {
-                "name": "Equity Priority", 
-                "description": "Prioritizes underserved Dark Zones with high access barriers",
-                "weight_backlog": 0.8,
-                "weight_access": 0.2,
-            },
-            "balanced": {
-                "name": "Balanced Approach",
-                "description": "Equal weight on backlog clearance and geographic access",
-                "weight_backlog": 0.5,
-                "weight_access": 0.5,
-            },
-        }
     
     def get_routes(self, scenario: str) -> List[Dict]:
-        """Get precomputed routes for a scenario."""
+        """Get optimized routes for a scenario."""
+        scenario = scenario.lower()
+        
+        # If not cached and we have data, compute on demand
+        if scenario not in self.routes and self._df is not None:
+            self.routes[scenario] = generate_demo_routes(
+                self._df, self._num_vehicles, scenario
+            )
+        
         return self.routes.get(scenario, [])
     
     def get_units(self, scenario: str) -> List[Dict]:
         """Get mobile unit positions for a scenario."""
+        scenario = scenario.lower()
+        
+        if scenario not in self.units:
+            routes = self.get_routes(scenario)
+            self.units[scenario] = generate_mobile_unit_positions(routes, 0.3)
+        
         return self.units.get(scenario, [])
     
     def get_scenario_info(self, scenario: str) -> Dict:
-        """Get scenario metadata."""
-        return self.scenarios.get(scenario, {})
+        """Get scenario configuration metadata."""
+        return SCENARIO_CONFIG.get(scenario.lower(), SCENARIO_CONFIG["balanced"])
+    
+    def clear(self):
+        """Clear all cached data."""
+        self.routes = {}
+        self.units = {}
+        self._df = None
 
 
-# Singleton cache instance
-_scenario_cache = None
+# ==========================================
+# SINGLETON CACHE INSTANCE
+# ==========================================
+
+_scenario_cache: Optional[ScenarioCache] = None
 
 def get_scenario_cache() -> ScenarioCache:
     """Get or create the scenario cache singleton."""
