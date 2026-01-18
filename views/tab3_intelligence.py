@@ -164,8 +164,11 @@ def create_forecasting_section(df: pd.DataFrame) -> None:
     """
     Forecasting & Trends - Answer 'Where is the crisis heading?'
     """
-    st.markdown("### Forecasting & Trends")
-    st.markdown("<div style='font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;'>ARIMA-based time-series analysis • Predicting saturation trajectory</div>", unsafe_allow_html=True)
+    section_header = '''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+<div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">Forecasting & Trends</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">ARIMA-based time-series analysis. Predicting saturation trajectory.</div>
+</div>'''
+    st.markdown(section_header, unsafe_allow_html=True)
     
     # Get stub data
     forecast_df = get_arima_forecast_stub()
@@ -174,7 +177,7 @@ def create_forecasting_section(df: pd.DataFrame) -> None:
     # ==========================================
     # TREND INDICATOR CARDS
     # ==========================================
-    st.markdown("#### Trend Indicators")
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.75rem;'>Trend Indicators</div>", unsafe_allow_html=True)
     
     cols = st.columns(4)
     for idx, (key, metric) in enumerate(trend_metrics.items()):
@@ -189,11 +192,11 @@ def create_forecasting_section(df: pd.DataFrame) -> None:
                 arrow = '→'
                 arrow_color = metric['color']
             
-            card_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; text-align: center;">
-<div style="font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">{metric['label']}</div>
+            card_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; text-align: center;">
+<div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">{metric['label']}</div>
 <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-<span style="font-size: 1.75rem; font-weight: 700; color: #1e293b;">{metric['value']}</span>
-<span style="font-size: 1.5rem; color: {arrow_color};">{arrow}</span>
+<span style="font-size: 1.5rem; font-weight: 600; color: {arrow_color};">{metric['value']}</span>
+<span style="font-size: 1rem; color: {arrow_color};">{arrow}</span>
 </div>
 </div>'''
             st.markdown(card_html, unsafe_allow_html=True)
@@ -203,7 +206,7 @@ def create_forecasting_section(df: pd.DataFrame) -> None:
     # ==========================================
     # SATURATION RATE FORECAST CHART
     # ==========================================
-    st.markdown("#### Saturation Rate Forecast (ARIMA Model)")
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.75rem;'>Saturation Rate Forecast (ARIMA Model)</div>", unsafe_allow_html=True)
     
     fig = go.Figure()
     
@@ -259,9 +262,9 @@ def create_forecasting_section(df: pd.DataFrame) -> None:
     # ==========================================
     # PREDICTIVE PATTERNS INSIGHT BOX
     # ==========================================
-    insight_html = '''<div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #bbf7d0; border-left: 4px solid #22c55e; border-radius: 8px; padding: 1.25rem; margin-top: 1rem;">
-<div style="font-size: 0.75rem; color: #166534; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 600;">Predictive Pattern Detected</div>
-<div style="font-size: 0.95rem; color: #14532d; line-height: 1.6;">
+    insight_html = '''<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #22c55e; border-radius: 0 6px 6px 0; padding: 1rem; margin-top: 1rem;">
+<div style="font-size: 0.7rem; color: #22c55e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 600;">Predictive Pattern Detected</div>
+<div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
 <strong>Seasonal Anomaly:</strong> March-April shows 25% enrollment spike due to academic year deadlines. 
 <strong>Recommendation:</strong> Pre-position additional mobile units in Dark Zones during Q1 to capitalize on this window.
 Model confidence: 87%.
@@ -278,25 +281,28 @@ def create_spatial_analysis_section(df: pd.DataFrame) -> None:
     """
     Spatial Statistical Deep Dive - 3D Dark Zone Discovery.
     """
-    st.markdown("### Spatial Statistical Deep Dive")
-    st.markdown("<div style='font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;'>3D density mapping • Dark Zone identification • Access barrier analysis</div>", unsafe_allow_html=True)
+    section_header = '''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+<div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">Spatial Statistical Deep Dive</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">3D density mapping. Dark Zone identification. Access barrier analysis.</div>
+</div>'''
+    st.markdown(section_header, unsafe_allow_html=True)
     
     # Get dark zone data
     dark_zones = get_dark_zone_data_stub(df)
     
     # Map legend
-    legend_html = '''<div style="display: flex; gap: 2rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1rem;">
+    legend_html = '''<div style="display: flex; gap: 1.5rem; padding: 0.75rem 1rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 1rem; flex-wrap: wrap;">
 <div style="display: flex; align-items: center; gap: 0.5rem;">
-<div style="width: 20px; height: 20px; background: linear-gradient(to top, #fef08a, #dc2626); border-radius: 4px;"></div>
-<span style="font-size: 0.8rem; color: #475569;"><strong>Height</strong> = Backlog Magnitude</span>
+<div style="width: 16px; height: 16px; background: linear-gradient(to top, #fef08a, #dc2626); border-radius: 3px;"></div>
+<span style="font-size: 0.75rem; color: #64748b;"><strong>Height</strong> = Backlog Magnitude</span>
 </div>
 <div style="display: flex; align-items: center; gap: 0.5rem;">
-<div style="width: 20px; height: 20px; background: #dc2626; border-radius: 4px;"></div>
-<span style="font-size: 0.8rem; color: #475569;"><strong>Red</strong> = High Vulnerability (access + backlog)</span>
+<div style="width: 16px; height: 16px; background: #dc2626; border-radius: 3px;"></div>
+<span style="font-size: 0.75rem; color: #64748b;"><strong style="color: #dc2626;">Red</strong> = High Vulnerability</span>
 </div>
 <div style="display: flex; align-items: center; gap: 0.5rem;">
-<div style="width: 20px; height: 20px; background: #f59e0b; border-radius: 4px;"></div>
-<span style="font-size: 0.8rem; color: #475569;"><strong>Amber</strong> = Moderate Risk</span>
+<div style="width: 16px; height: 16px; background: #f59e0b; border-radius: 3px;"></div>
+<span style="font-size: 0.75rem; color: #64748b;"><strong style="color: #f59e0b;">Amber</strong> = Moderate Risk</span>
 </div>
 </div>'''
     st.markdown(legend_html, unsafe_allow_html=True)
@@ -356,16 +362,16 @@ def create_spatial_analysis_section(df: pd.DataFrame) -> None:
     deck = pdk.Deck(
         layers=[hex_layer, scatter_layer],
         initial_view_state=view_state,
-        map_style="mapbox://styles/mapbox/dark-v11",
+        map_style="dark",
         tooltip=tooltip,
     )
     
-    st.pydeck_chart(deck, use_container_width=True)
+    st.pydeck_chart(deck, use_container_width=True, height=500)
     
     # ==========================================
     # DARK ZONE DISCOVERY NARRATIVE
     # ==========================================
-    st.markdown("#### Dark Zone Discovery: The Invisible Crisis")
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.75rem;'>Dark Zone Discovery: The Invisible Crisis</div>", unsafe_allow_html=True)
     
     dark_zone_count = len(df[df['zone_label'] == 'Dark Zone'])
     dark_zone_backlog = df[df['zone_label'] == 'Dark Zone']['backlog_students'].sum()
@@ -375,29 +381,29 @@ def create_spatial_analysis_section(df: pd.DataFrame) -> None:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        metric_html = f'''<div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; text-align: center;">
-<div style="font-size: 0.7rem; color: #dc2626; text-transform: uppercase; font-weight: 600;">Dark Zone Schools</div>
-<div style="font-size: 2rem; font-weight: 700; color: #b91c1c;">{dark_zone_count}</div>
+        metric_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; text-align: center;">
+<div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 500;">Dark Zone Schools</div>
+<div style="font-size: 1.75rem; font-weight: 600; color: #dc2626;">{dark_zone_count}</div>
 </div>'''
         st.markdown(metric_html, unsafe_allow_html=True)
     
     with col2:
-        metric_html = f'''<div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; text-align: center;">
-<div style="font-size: 0.7rem; color: #dc2626; text-transform: uppercase; font-weight: 600;">Students in Dark Zones</div>
-<div style="font-size: 2rem; font-weight: 700; color: #b91c1c;">{dark_zone_backlog:,}</div>
+        metric_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; text-align: center;">
+<div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 500;">Students in Dark Zones</div>
+<div style="font-size: 1.75rem; font-weight: 600; color: #dc2626;">{dark_zone_backlog:,}</div>
 </div>'''
         st.markdown(metric_html, unsafe_allow_html=True)
     
     with col3:
-        metric_html = f'''<div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; text-align: center;">
-<div style="font-size: 0.7rem; color: #dc2626; text-transform: uppercase; font-weight: 600;">% of Total Crisis</div>
-<div style="font-size: 2rem; font-weight: 700; color: #b91c1c;">{dark_zone_pct:.1f}%</div>
+        metric_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; text-align: center;">
+<div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 500;">% of Total Crisis</div>
+<div style="font-size: 1.75rem; font-weight: 600; color: #dc2626;">{dark_zone_pct:.1f}%</div>
 </div>'''
         st.markdown(metric_html, unsafe_allow_html=True)
     
     # Insight
-    insight_html = '''<div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0;">
-<div style="font-size: 0.9rem; color: #7f1d1d; line-height: 1.6;">
+    insight_html = '''<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #dc2626; padding: 1rem; margin-top: 1rem; border-radius: 0 6px 6px 0;">
+<div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
 <strong>Root Cause Identified:</strong> Enrollment drop-off at ages 5 and 15 is concentrated in areas >15km from enrollment centers. 
 These "Dark Zones" lack mobile connectivity, creating a <em>distance-based access barrier</em> that standard center-based enrollment cannot address.
 </div>
@@ -413,16 +419,19 @@ def create_equity_section(df: pd.DataFrame) -> None:
     """
     Equity Analytics - Proving 'Who is being left behind'.
     """
-    st.markdown("### Equity Analytics")
-    st.markdown("<div style='font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;'>Gender Parity Index analysis • Vulnerability assessment • Proving equity gaps</div>", unsafe_allow_html=True)
+    section_header = '''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+<div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">Equity Analytics</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Gender Parity Index analysis. Vulnerability assessment. Proving equity gaps.</div>
+</div>'''
+    st.markdown(section_header, unsafe_allow_html=True)
     
     # ==========================================
     # GPI DEFINITION BOX
     # ==========================================
-    gpi_def_html = '''<div style="background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 1.5rem; border-radius: 0 8px 8px 0;">
-<div style="font-size: 0.85rem; color: #1e40af;">
+    gpi_def_html = '''<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #3b82f6; padding: 1rem; margin-bottom: 1.5rem; border-radius: 0 6px 6px 0;">
+<div style="font-size: 0.8rem; color: #475569;">
 <strong>Gender Parity Index (GPI)</strong> = Girls Enrolled / Boys Enrolled<br>
-<span style="color: #64748b;">GPI ≥ 0.95 = Parity achieved | GPI < 0.90 = Equity risk | GPI < 0.85 = Critical disparity</span>
+<span style="color: #94a3b8;">GPI ≥ 0.95 = Parity achieved | GPI < 0.90 = Equity risk | GPI < 0.85 = Critical disparity</span>
 </div>
 </div>'''
     st.markdown(gpi_def_html, unsafe_allow_html=True)
@@ -433,7 +442,7 @@ def create_equity_section(df: pd.DataFrame) -> None:
     # ==========================================
     # GPI BY ZONE (VULNERABILITY PROGRESS BARS)
     # ==========================================
-    st.markdown("#### Vulnerability Progress by Zone")
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.75rem;'>Vulnerability Progress by Zone</div>", unsafe_allow_html=True)
     
     zones = ['Dark Zone', 'Moderate Zone', 'Safe Zone']
     zone_colors = {'Dark Zone': '#dc2626', 'Moderate Zone': '#f59e0b', 'Safe Zone': '#22c55e'}
@@ -461,22 +470,22 @@ def create_equity_section(df: pd.DataFrame) -> None:
         
         progress_pct = avg_gpi * 100
         
-        zone_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem;">
+        zone_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.875rem; margin-bottom: 0.5rem;">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
 <div style="display: flex; align-items: center; gap: 0.5rem;">
-<div style="width: 12px; height: 12px; background: {zone_colors[zone]}; border-radius: 50%;"></div>
-<span style="font-weight: 600; color: #1e293b;">{zone}</span>
-<span style="font-size: 0.75rem; color: #64748b;">({school_count} schools)</span>
+<div style="width: 10px; height: 10px; background: {zone_colors[zone]}; border-radius: 50%;"></div>
+<span style="font-weight: 500; font-size: 0.85rem; color: #1e293b;">{zone}</span>
+<span style="font-size: 0.7rem; color: #94a3b8;">({school_count} schools)</span>
 </div>
 <div style="display: flex; align-items: center; gap: 1rem;">
-<span style="font-size: 0.75rem; color: #64748b;">Est. girls at risk: <strong>{girls_gap:,}</strong></span>
-<span style="background: {bar_color}20; color: {bar_color}; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">{status}</span>
+<span style="font-size: 0.7rem; color: #64748b;">Est. girls at risk: <strong style="color: #1e293b;">{girls_gap:,}</strong></span>
+<span style="background: {bar_color}15; color: {bar_color}; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 600;">{status}</span>
 </div>
 </div>
-<div style="height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden;">
+<div style="height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden;">
 <div style="height: 100%; width: {progress_pct}%; background: {bar_color};"></div>
 </div>
-<div style="display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.7rem; color: #94a3b8;">
+<div style="display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.65rem; color: #94a3b8;">
 <span>GPI: {avg_gpi:.3f}</span>
 <span>Target: 0.95</span>
 </div>
@@ -486,7 +495,7 @@ def create_equity_section(df: pd.DataFrame) -> None:
     # ==========================================
     # GPI DISTRIBUTION CHART
     # ==========================================
-    st.markdown("#### GPI Distribution Across Schools")
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.75rem;'>GPI Distribution Across Schools</div>", unsafe_allow_html=True)
     
     fig = go.Figure()
     
@@ -528,12 +537,12 @@ def create_equity_section(df: pd.DataFrame) -> None:
     at_risk_schools = len(df[(df['gender_parity_index'] >= 0.85) & (df['gender_parity_index'] < 0.90)])
     total_girls_gap = int(((1 - df['gender_parity_index']) * df['backlog_students']).sum())
     
-    equity_narrative_html = f'''<div style="background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border: 1px solid #f0abfc; border-radius: 8px; padding: 1.25rem; margin-top: 1rem;">
-<div style="font-size: 0.75rem; color: #86198f; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 600;">Equity Impact Statement</div>
-<div style="font-size: 0.95rem; color: #701a75; line-height: 1.6;">
-<strong>{critical_schools} schools</strong> are in critical gender disparity (GPI &lt; 0.85), 
-with an additional <strong>{at_risk_schools} at risk</strong>. 
-This translates to approximately <strong>{total_girls_gap:,} girls</strong> who may be systematically excluded from enrollment.
+    equity_narrative_html = f'''<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #a855f7; border-radius: 0 6px 6px 0; padding: 1rem; margin-top: 1rem;">
+<div style="font-size: 0.7rem; color: #a855f7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 600;">Equity Impact Statement</div>
+<div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+<strong style="color: #dc2626;">{critical_schools} schools</strong> are in critical gender disparity (GPI &lt; 0.85), 
+with an additional <strong style="color: #f59e0b;">{at_risk_schools} at risk</strong>. 
+This translates to approximately <strong style="color: #1e293b;">{total_girls_gap:,} girls</strong> who may be systematically excluded from enrollment.
 <br><br>
 <em>The equity-weighted optimization prioritizes these schools to ensure girls are not left behind.</em>
 </div>
@@ -549,8 +558,11 @@ def create_risk_section(df: pd.DataFrame) -> None:
     """
     Predictive Risk & Feasibility - Operational constraints and success probability.
     """
-    st.markdown("### Predictive Risk & Feasibility")
-    st.markdown("<div style='font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;'>ML-based success prediction • Operational constraints • Service time modeling</div>", unsafe_allow_html=True)
+    section_header = '''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+<div style="font-size: 0.95rem; font-weight: 600; color: #1e293b;">Predictive Risk & Feasibility</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">ML-based success prediction. Operational constraints. Service time modeling.</div>
+</div>'''
+    st.markdown(section_header, unsafe_allow_html=True)
     
     # Get risk model output
     risk_data = get_risk_model_output_stub()
@@ -570,17 +582,17 @@ def create_risk_section(df: pd.DataFrame) -> None:
         success_color = '#dc2626'
         success_label = 'LOW CONFIDENCE'
     
-    success_html = f'''<div style="background: #ffffff; border: 2px solid {success_color}; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
-<div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Overall Mission Success Probability</div>
-<div style="font-size: 3.5rem; font-weight: 800; color: {success_color};">{success_pct:.0f}%</div>
-<div style="background: {success_color}20; color: {success_color}; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block;">{success_label}</div>
+    success_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; text-align: center; margin-bottom: 1.5rem;">
+<div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Overall Mission Success Probability</div>
+<div style="font-size: 2.5rem; font-weight: 700; color: {success_color};">{success_pct:.0f}%</div>
+<div style="background: {success_color}15; color: {success_color}; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; display: inline-block;">{success_label}</div>
 </div>'''
     st.markdown(success_html, unsafe_allow_html=True)
     
     # ==========================================
     # RISK FACTORS BREAKDOWN
     # ==========================================
-    st.markdown("#### Risk Factors Impact Analysis")
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.75rem;'>Risk Factors Impact Analysis</div>", unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
@@ -622,7 +634,7 @@ def create_risk_section(df: pd.DataFrame) -> None:
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.markdown("##### Risk Legend")
+        st.markdown("<div style='font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;'>Risk Legend</div>", unsafe_allow_html=True)
         legend_items = [
             ('High Risk', '#dc2626', 'Requires immediate mitigation'),
             ('Moderate Risk', '#f59e0b', 'Monitor closely'),
@@ -630,10 +642,10 @@ def create_risk_section(df: pd.DataFrame) -> None:
         ]
         for label, color, desc in legend_items:
             item_html = f'''<div style="display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.75rem;">
-<div style="width: 12px; height: 12px; background: {color}; border-radius: 3px; margin-top: 3px;"></div>
+<div style="width: 10px; height: 10px; background: {color}; border-radius: 2px; margin-top: 3px;"></div>
 <div>
-<div style="font-size: 0.8rem; font-weight: 600; color: #1e293b;">{label}</div>
-<div style="font-size: 0.7rem; color: #64748b;">{desc}</div>
+<div style="font-size: 0.75rem; font-weight: 500; color: #1e293b;">{label}</div>
+<div style="font-size: 0.65rem; color: #94a3b8;">{desc}</div>
 </div>
 </div>'''
             st.markdown(item_html, unsafe_allow_html=True)
@@ -641,7 +653,7 @@ def create_risk_section(df: pd.DataFrame) -> None:
     # ==========================================
     # SERVICE TIME MODELING BY ZONE
     # ==========================================
-    st.markdown("#### Operational Constraints: Service Time by Zone")
+    st.markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.75rem;'>Operational Constraints: Service Time by Zone</div>", unsafe_allow_html=True)
     
     zone_risks = risk_data['zone_risks']
     
@@ -649,21 +661,18 @@ def create_risk_section(df: pd.DataFrame) -> None:
     for zone, data in zone_risks.items():
         if zone == 'Dark Zone':
             zone_color = '#dc2626'
-            zone_bg = '#fef2f2'
         elif zone == 'Moderate Zone':
             zone_color = '#f59e0b'
-            zone_bg = '#fefce8'
         else:
             zone_color = '#22c55e'
-            zone_bg = '#f0fdf4'
         
-        card_html = f'''<div style="background: {zone_bg}; border: 1px solid {zone_color}40; border-radius: 8px; padding: 1rem; text-align: center;">
-<div style="font-size: 0.75rem; color: {zone_color}; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem;">{zone}</div>
-<div style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">{data['success_rate']*100:.0f}%</div>
-<div style="font-size: 0.7rem; color: #64748b;">Expected Success Rate</div>
-<div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid {zone_color}30;">
+        card_html = f'''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; text-align: center;">
+<div style="font-size: 0.7rem; color: {zone_color}; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem;">{zone}</div>
+<div style="font-size: 1.5rem; font-weight: 600; color: {zone_color};">{data['success_rate']*100:.0f}%</div>
+<div style="font-size: 0.65rem; color: #94a3b8;">Expected Success Rate</div>
+<div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #f1f5f9;">
 <div style="font-size: 1.25rem; font-weight: 600; color: #1e293b;">{data['service_time_factor']}x</div>
-<div style="font-size: 0.7rem; color: #64748b;">Service Time Multiplier</div>
+<div style="font-size: 0.65rem; color: #94a3b8;">Service Time Multiplier</div>
 </div>
 </div>'''
         zone_cards.append(card_html)
@@ -674,10 +683,10 @@ def create_risk_section(df: pd.DataFrame) -> None:
             st.markdown(card, unsafe_allow_html=True)
     
     # Explanation
-    constraint_html = '''<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
-<div style="font-size: 0.85rem; color: #475569; line-height: 1.6;">
+    constraint_html = '''<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; margin-top: 1rem;">
+<div style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
 <strong>Why Service Time Varies:</strong> Dark Zones require 1.8x more time due to:
-<ul style="margin: 0.5rem 0 0 1.5rem;">
+<ul style="margin: 0.5rem 0 0 1.5rem; color: #64748b;">
 <li>Unpaved road access requiring slower vehicle speeds</li>
 <li>Limited mobile network requiring offline data sync</li>
 <li>Larger average distances between schools</li>
@@ -701,9 +710,9 @@ def render_tab3(df: pd.DataFrame, selected_section: str = "all") -> None:
         selected_section: Which section to render ('all', 'forecasting', 'spatial', 'equity', 'risk')
     """
     # Main header
-    header_html = '''<div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
-<div style="font-size: 1.2rem; font-weight: 700; color: #1e293b; letter-spacing: 0.02em;">ANALYTICAL INTELLIGENCE</div>
-<div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Deep-dive analytics • Forecasting • Equity assessment • Risk modeling</div>
+    header_html = '''<div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+<div style="font-size: 1rem; font-weight: 600; color: #1e293b; letter-spacing: 0.02em;">ANALYTICAL INTELLIGENCE</div>
+<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">Deep-dive analytics. Forecasting. Equity assessment. Risk modeling.</div>
 </div>'''
     st.markdown(header_html, unsafe_allow_html=True)
     

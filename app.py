@@ -116,7 +116,8 @@ st.markdown("""
     .aadhaar-logo {
         width: 80px;
         height: 80px;
-        margin-bottom: 0.5rem;
+        margin: 0 auto 0.5rem auto;
+        display: block;
         object-fit: contain;
     }
 
@@ -374,7 +375,75 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+
+    /* ==========================================
+       CUSTOM LOADING CURSOR - Pinwheel Style
+       ========================================== */
+    /* Cursor changes to spinning pinwheel when Streamlit is processing */
+    .stale-content,
+    .stale-content *,
+    body.cursor-loading,
+    body.cursor-loading * {
+        cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 100 100'%3E%3Cstyle%3E@keyframes spin %7B from %7B transform: rotate(0deg); %7D to %7B transform: rotate(360deg); %7D %7D .spinner %7B animation: spin 0.8s linear infinite; transform-origin: 50px 50px; %7D%3C/style%3E%3Cg class='spinner'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23f59e0b' stroke-width='3' opacity='0.3'/%3E%3Cpath d='M50,50 Q50,20 25,35 Q50,50 50,50' fill='%23f59e0b'/%3E%3Cpath d='M50,50 Q80,50 65,25 Q50,50 50,50' fill='%23ffffff' stroke='%23cbd5e1' stroke-width='1'/%3E%3Cpath d='M50,50 Q50,80 75,65 Q50,50 50,50' fill='%23f59e0b'/%3E%3Cpath d='M50,50 Q20,50 35,75 Q50,50 50,50' fill='%23ffffff' stroke='%23cbd5e1' stroke-width='1'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%23f59e0b'/%3E%3C/g%3E%3C/svg%3E") 12 12, wait !important;
+    }
+
+    /* Also target Streamlit's running state */
+    [data-stale="true"],
+    [data-stale="true"] * {
+        cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 100 100'%3E%3Cstyle%3E@keyframes spin %7B from %7B transform: rotate(0deg); %7D to %7B transform: rotate(360deg); %7D %7D .spinner %7B animation: spin 0.8s linear infinite; transform-origin: 50px 50px; %7D%3C/style%3E%3Cg class='spinner'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23f59e0b' stroke-width='3' opacity='0.3'/%3E%3Cpath d='M50,50 Q50,20 25,35 Q50,50 50,50' fill='%23f59e0b'/%3E%3Cpath d='M50,50 Q80,50 65,25 Q50,50 50,50' fill='%23ffffff' stroke='%23cbd5e1' stroke-width='1'/%3E%3Cpath d='M50,50 Q50,80 75,65 Q50,50 50,50' fill='%23f59e0b'/%3E%3Cpath d='M50,50 Q20,50 35,75 Q50,50 50,50' fill='%23ffffff' stroke='%23cbd5e1' stroke-width='1'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%23f59e0b'/%3E%3C/g%3E%3C/svg%3E") 12 12, wait !important;
+    }
 </style>
+""", unsafe_allow_html=True)
+
+# ==========================================
+# 2B. LOADING CURSOR SCRIPT
+# ==========================================
+st.markdown("""
+<script>
+    (function() {
+        // Watch for Streamlit's running/stale state
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes') {
+                    const target = mutation.target;
+                    // Check for stale attribute (Streamlit adds this when rerunning)
+                    if (target.hasAttribute('data-stale') && target.getAttribute('data-stale') === 'true') {
+                        document.body.classList.add('cursor-loading');
+                    } else {
+                        document.body.classList.remove('cursor-loading');
+                    }
+                }
+            });
+        });
+        
+        // Observe the app container for stale state changes
+        function startObserving() {
+            const appContainer = document.querySelector('[data-testid="stAppViewContainer"]');
+            const stApp = document.querySelector('.stApp');
+            
+            if (stApp) {
+                observer.observe(stApp, { attributes: true, attributeFilter: ['data-stale'] });
+            }
+            if (appContainer) {
+                observer.observe(appContainer, { attributes: true, subtree: true });
+            }
+            
+            // Also observe body for class changes
+            observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+        }
+        
+        // Start observing when DOM is ready
+        if (document.readyState === 'complete') {
+            startObserving();
+        } else {
+            window.addEventListener('load', startObserving);
+        }
+        
+        // Retry observation setup
+        setTimeout(startObserving, 500);
+        setTimeout(startObserving, 1500);
+    })();
+</script>
 """, unsafe_allow_html=True)
 
 # ==========================================

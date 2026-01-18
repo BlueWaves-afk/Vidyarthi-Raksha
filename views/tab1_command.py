@@ -314,220 +314,138 @@ def create_kpi_cards(df: pd.DataFrame, num_vans: int = 3, capacity: int = 150,
     # Fuel cost status based on mode
     fuel_status = "success" if policy_mode == "efficiency" else ("warning" if policy_mode == "equity" else "neutral")
     
-    # KPI Row 1: Primary Metrics - Spec-compliant Quadrant Layout
-    # Total Backlog | GPI | Saturation Rate | Days to Clear
+    # KPI Row 1: Primary Metrics - Clean minimal design
     cols = st.columns(4, gap="medium")
     
-    # Shared card style for uniform sizing
+    # Uniform card style with fixed height
     card_style = """
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 10px;
+        border-radius: 8px;
         padding: 1.25rem;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-        height: 160px;
+        text-align: center;
+        height: 110px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
     """
     
     with cols[0]:
-        # TOTAL BACKLOG - "North Star" Metric
-        backlog_color = "#dc2626" if total_backlog > 3000 else ("#f59e0b" if total_backlog > 1500 else "#22c55e")
-        backlog_status = "CRITICAL" if total_backlog > 3000 else ("ELEVATED" if total_backlog > 1500 else "NORMAL")
+        # SATURATION RATE MOM
+        saturation_pct = metrics['saturation']
+        prev_month_saturation = saturation_pct - 4.2
+        saturation_delta = saturation_pct - prev_month_saturation
+        trend_icon = "↑" if saturation_delta > 0 else "↓"
+        trend_color = "#22c55e" if saturation_delta > 0 else "#dc2626"
         
         st.markdown(f"""
-            <div style="{card_style} border-left: 4px solid {backlog_color}; background: linear-gradient(135deg, #ffffff 0%, {'#fef2f2' if total_backlog > 3000 else '#fffbeb'} 100%);">
-                <div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <div style="font-size: 0.7rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.08em; font-weight: 600;">
-                            ⭐ Total Backlog
-                        </div>
-                        <span style="background:{backlog_color};color:#fff;padding:2px 6px;border-radius:4px;font-size:0.6rem;font-weight:600;">
-                            {backlog_status}
-                        </span>
-                    </div>
-                    <div style="font-size: 2.4rem; font-weight: 800; color: {backlog_color}; line-height: 1.1;">
-                        {millify(total_backlog, precision=1)}
-                    </div>
-                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
-                        Students awaiting enrollment
-                    </div>
+            <div style="{card_style}">
+                <div style="font-size: 0.65rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; font-weight: 500; margin-bottom: 0.5rem;">
+                    Saturation Rate MoM
                 </div>
-                <div style="height: 4px; background: #fee2e2; border-radius: 2px; overflow: hidden;">
-                    <div style="height: 100%; width: {min(100, total_backlog/50):.0f}%; background: {backlog_color};"></div>
+                <div style="font-size: 1.75rem; font-weight: 600; color: {trend_color}; line-height: 1;">
+                    +{abs(saturation_delta):.1f}% <span style="font-size: 1rem;">{trend_icon}</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with cols[1]:
-        # Gender Parity Index - KEY EQUITY INDICATOR (Color-coded: Red/Yellow/Green)
-        gpi_color = "#22c55e" if gpi_status == "success" else ("#f59e0b" if gpi_status == "warning" else "#dc2626")
-        bar_bg = "#dcfce7" if gpi_status == "success" else ("#fef3c7" if gpi_status == "warning" else "#fee2e2")
+        # BACKLOG REDUCTION MOM
+        backlog_reduction = -18.5  # Simulated reduction percentage
+        reduction_color = "#22c55e" if backlog_reduction < 0 else "#dc2626"
+        reduction_icon = "↓" if backlog_reduction < 0 else "↑"
         
         st.markdown(f"""
-            <div style="{card_style} border-left: 4px solid {gpi_color};">
-                <div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <div style="font-size: 0.7rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.08em; font-weight: 600;">
-                            Gender Parity Index
-                        </div>
-                        <span style="background:{gpi_color};color:#fff;padding:2px 6px;border-radius:4px;font-size:0.6rem;font-weight:600;">{gpi_label}</span>
-                    </div>
-                    <div style="font-size: 2.2rem; font-weight: 700; color: {gpi_color}; line-height: 1.1;">
-                        {avg_gpi:.2f}
-                    </div>
-                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
-                        Target: ≥ 0.95 for equity
-                    </div>
+            <div style="{card_style}">
+                <div style="font-size: 0.65rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; font-weight: 500; margin-bottom: 0.5rem;">
+                    Backlog Reduction MoM
                 </div>
-                <div style="height: 4px; background: {bar_bg}; border-radius: 2px; overflow: hidden;">
-                    <div style="height: 100%; width: {min(100, avg_gpi*100):.0f}%; background: {gpi_color};"></div>
+                <div style="font-size: 1.75rem; font-weight: 600; color: {reduction_color}; line-height: 1;">
+                    {backlog_reduction:.1f}% <span style="font-size: 1rem;">{reduction_icon}</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with cols[2]:
-        # SATURATION RATE - Trend metric with monthly comparison
-        saturation_pct = metrics['saturation']
-        prev_month_saturation = saturation_pct - 5.2  # Simulated previous month
-        saturation_delta = saturation_pct - prev_month_saturation
-        saturation_color = "#22c55e" if saturation_pct >= 70 else ("#f59e0b" if saturation_pct >= 50 else "#dc2626")
-        trend_icon = "↑" if saturation_delta > 0 else "↓"
-        trend_color = "#22c55e" if saturation_delta > 0 else "#dc2626"
+        # WEEKLY ENROLLMENT RATE
+        weekly_rate = int(total_backlog * 0.15)  # Simulated weekly enrollment
+        rate_color = "#3b82f6"
         
         st.markdown(f"""
-            <div style="{card_style} border-left: 4px solid {saturation_color};">
-                <div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <div style="font-size: 0.7rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.08em; font-weight: 600;">
-                            Saturation Rate
-                        </div>
-                        <span style="color:{trend_color};font-weight:700;font-size:0.75rem;">
-                            {trend_icon} {abs(saturation_delta):.1f}%
-                        </span>
-                    </div>
-                    <div style="font-size: 2.2rem; font-weight: 700; color: {saturation_color}; line-height: 1.1;">
-                        {saturation_pct:.1f}%
-                    </div>
-                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
-                        vs {prev_month_saturation:.1f}% last month
-                    </div>
+            <div style="{card_style}">
+                <div style="font-size: 0.65rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; font-weight: 500; margin-bottom: 0.5rem;">
+                    Weekly Enrollment Rate
                 </div>
-                <div style="height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
-                    <div style="height: 100%; width: {saturation_pct:.0f}%; background: {saturation_color};"></div>
+                <div style="font-size: 1.75rem; font-weight: 600; color: {rate_color}; line-height: 1;">
+                    {weekly_rate:,} <span style="font-size: 1rem;">↑</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with cols[3]:
-        # OPERATIONAL CAPACITY - "Days to Clear Backlog"
-        days_color = "#22c55e" if days_to_clear < 30 else ("#f59e0b" if days_to_clear < 60 else "#dc2626")
-        days_status = "ON TRACK" if days_to_clear < 30 else ("EXTENDED" if days_to_clear < 60 else "CRITICAL")
+        # DAYS TO 95% SATURATION
+        days_to_target = 127  # Simulated
+        days_color = "#f59e0b"
         
         st.markdown(f"""
-            <div style="{card_style} border-left: 4px solid {days_color};">
-                <div>
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <div style="font-size: 0.7rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.08em; font-weight: 600;">
-                            Operational Capacity
-                        </div>
-                        <span style="background:{days_color};color:#fff;padding:2px 6px;border-radius:4px;font-size:0.6rem;font-weight:600;">{days_status}</span>
-                    </div>
-                    <div style="font-size: 2.2rem; font-weight: 700; color: {days_color}; line-height: 1.1;">
-                        {days_to_clear} days
-                    </div>
-                    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">
-                        to clear backlog @ {num_vans} vans
-                    </div>
+            <div style="{card_style}">
+                <div style="font-size: 0.65rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; font-weight: 500; margin-bottom: 0.5rem;">
+                    Days to 95% Saturation
                 </div>
-                <div style="height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
-                    <div style="height: 100%; width: {min(100, 100 - days_to_clear):.0f}%; background: {days_color};"></div>
+                <div style="font-size: 1.75rem; font-weight: 600; color: {days_color}; line-height: 1;">
+                    {days_to_target} <span style="font-size: 1rem;">→</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
-    # KPI Row 2: Alert Cards with policy-aware styling
+    # KPI Row 2: Clean centered cards matching image 2 style
     st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
     alert_cols = st.columns(2, gap="medium")
     
     with alert_cols[0]:
-        # Days to Clear - shows efficiency/speed
+        # Days to Clear - clean centered card
         days_color = "#22c55e" if days_to_clear < 30 else ("#f59e0b" if days_to_clear < 60 else "#dc2626")
-        days_bg = "#dcfce7" if days_to_clear < 30 else ("#fef3c7" if days_to_clear < 60 else "#fee2e2")
         
         st.markdown(f"""
             <div style="
-                background: #f8fafc;
-                border: 1px solid #e2e8f0;
-                border-left: 4px solid {days_color};
-                border-radius: 10px;
-                padding: 1.25rem;
-                display: flex;
-                align-items: center;
-                gap: 1rem;
+                background: #ffffff;
+                border: 2px solid {days_color}30;
+                border-radius: 12px;
+                padding: 1.5rem;
+                text-align: center;
             ">
-                <div style="
-                    background: {days_bg};
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 10px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.2rem;
-                    color: {days_color};
-                    font-weight: 700;
-                ">{days_to_clear}</div>
-                <div style="flex: 1;">
-                    <div style="font-size: 0.7rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.08em; font-weight: 600;">
-                        Days to Clear Backlog
-                    </div>
-                    <div style="font-size: 0.85rem; color: #475569; margin-top: 0.25rem;">
-                        @ {num_vans} vans × {capacity} students/day
-                    </div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.08em; font-weight: 500; margin-bottom: 0.5rem;">
+                    Days to Clear Backlog
+                </div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: {days_color}; line-height: 1.2;">
+                    {days_to_clear}
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                    @ {num_vans} vans × {capacity} students/day
                 </div>
             </div>
         """, unsafe_allow_html=True)
     
     with alert_cols[1]:
-        # Equity Alerts - shows policy impact
+        # Equity Alerts - clean centered card
         alert_color = "#22c55e" if equity_alerts < 5 else ("#f59e0b" if equity_alerts < 10 else "#dc2626")
-        alert_bg = "#dcfce7" if equity_alerts < 5 else ("#fef3c7" if equity_alerts < 10 else "#fee2e2")
-        alert_status = "LOW" if equity_alerts < 5 else ("MODERATE" if equity_alerts < 10 else "HIGH")
         
         st.markdown(f"""
             <div style="
-                background: {alert_bg};
-                border: 1px solid {'#bbf7d0' if equity_alerts < 5 else ('#fde68a' if equity_alerts < 10 else '#fecaca')};
-                border-left: 4px solid {alert_color};
-                border-radius: 10px;
-                padding: 1.25rem;
-                display: flex;
-                align-items: center;
-                gap: 1rem;
+                background: #ffffff;
+                border: 2px solid {alert_color}30;
+                border-radius: 12px;
+                padding: 1.5rem;
+                text-align: center;
             ">
-                <div style="
-                    background: {'#ffffff' if equity_alerts >= 5 else '#f0fdf4'};
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 10px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.2rem;
-                    color: {alert_color};
-                    font-weight: 700;
-                ">{equity_alerts}</div>
-                <div style="flex: 1;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="font-size: 0.7rem; text-transform: uppercase; color: {'#166534' if equity_alerts < 5 else ('#92400e' if equity_alerts < 10 else '#991b1b')}; letter-spacing: 0.08em; font-weight: 600;">
-                            Equity Alerts
-                        </div>
-                        <span style="background:{alert_color};color:#fff;padding:1px 5px;border-radius:3px;font-size:0.55rem;font-weight:600;">{alert_status}</span>
-                    </div>
-                    <div style="font-size: 0.85rem; color: {'#15803d' if equity_alerts < 5 else ('#a16207' if equity_alerts < 10 else '#b91c1c')}; margin-top: 0.25rem;">
-                        Schools with GPI below 0.90
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.08em; font-weight: 500; margin-bottom: 0.5rem;">
+                    Equity Alerts
+                </div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: {alert_color}; line-height: 1.2;">
+                    {equity_alerts}
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                    Schools with GPI below 0.90
                     </div>
                 </div>
             </div>
@@ -571,20 +489,19 @@ def create_coverage_watch_header(scenario: str, routes: List[Dict]) -> None:
     
     st.markdown(f"""
         <div style="
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 12px;
+            background: #ffffff;
+            border-radius: 8px;
             padding: 1.25rem 1.5rem;
             margin-bottom: 1rem;
-            border: 1px solid {info['color']};
-            border-left: 5px solid {info['color']};
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid {info['color']};
         ">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <div style="font-size: 0.7rem; text-transform: uppercase; color: {info['color']}; letter-spacing: 0.1em; font-weight: 600;">
-                        {info['icon']} COVERAGE WATCH ACTIVE
+                        COVERAGE WATCH ACTIVE
                     </div>
-                    <div style="font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-top: 0.25rem;">
+                    <div style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-top: 0.25rem;">
                         {info['title']}
                     </div>
                     <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.15rem;">
@@ -593,20 +510,20 @@ def create_coverage_watch_header(scenario: str, routes: List[Dict]) -> None:
                 </div>
                 <div style="display: flex; gap: 1.5rem; text-align: center;">
                     <div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: #f8fafc;">{len(routes)}</div>
-                        <div style="font-size: 0.65rem; color: #64748b; text-transform: uppercase;">Routes</div>
+                        <div style="font-size: 1.4rem; font-weight: 600; color: #1e293b;">{len(routes)}</div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Routes</div>
                     </div>
                     <div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: #22c55e;">{total_schools}</div>
-                        <div style="font-size: 0.65rem; color: #64748b; text-transform: uppercase;">Schools</div>
+                        <div style="font-size: 1.4rem; font-weight: 600; color: #22c55e;">{total_schools}</div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Schools</div>
                     </div>
                     <div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: #3b82f6;">{millify(total_students)}</div>
-                        <div style="font-size: 0.65rem; color: #64748b; text-transform: uppercase;">Students</div>
+                        <div style="font-size: 1.4rem; font-weight: 600; color: #3b82f6;">{millify(total_students)}</div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Students</div>
                     </div>
                     <div>
-                        <div style="font-size: 1.4rem; font-weight: 700; color: #f59e0b;">{total_distance:.0f}km</div>
-                        <div style="font-size: 0.65rem; color: #64748b; text-transform: uppercase;">Distance</div>
+                        <div style="font-size: 1.4rem; font-weight: 600; color: #f59e0b;">{total_distance:.0f}km</div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Distance</div>
                     </div>
                 </div>
             </div>
@@ -835,14 +752,15 @@ def create_3d_landscape_map(df: pd.DataFrame, routes: List[Dict] = None,
     }
     
     # Create deck
+    # Using 'dark' style which works without Mapbox token
     deck = pdk.Deck(
         layers=layers,
         initial_view_state=view_state,
-        map_style="mapbox://styles/mapbox/dark-v11",
+        map_style="dark",
         tooltip=tooltip,
     )
     
-    st.pydeck_chart(deck, use_container_width=True)
+    st.pydeck_chart(deck, use_container_width=True, height=500)
 
 
 def create_route_legend(routes: List[Dict]) -> None:
