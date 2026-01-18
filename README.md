@@ -7,9 +7,8 @@ Strategic dashboards, tactical routing, and analytical intelligence in one Strea
 
 [![Built with Streamlit](https://img.shields.io/badge/Built%20with-Streamlit-ff4b4b.svg)](https://streamlit.io/)  
 **Status:** DEMO-ready (v1.0.0) • **Last Update:** 18 Jan 2026
-**https://vidyarthi-raksha-gzspptyjwhbvzzaiqyhhhv.streamlit.app/**
 </div>
-
+https://vidyarthi-raksha-gzspptyjwhbvzzaiqyhhhv.streamlit.app/
 ## Table of Contents
 - [Project Overview](#project-overview)
 - [System Architecture](#system-architecture)
