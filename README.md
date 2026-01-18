@@ -6,7 +6,7 @@
 Strategic dashboards, tactical routing, and analytical intelligence in one Streamlit application.
 
 [![Built with Streamlit](https://img.shields.io/badge/Built%20with-Streamlit-ff4b4b.svg)](https://streamlit.io/)  
-**Status:** Production-ready (v2.0.1) • **Last Update:** 18 Jan 2026
+**Status:** DEMO-ready (v1.0.0) • **Last Update:** 18 Jan 2026
 
 </div>
 
