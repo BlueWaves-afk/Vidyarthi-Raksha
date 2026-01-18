@@ -10,3 +10,4 @@ ortools
 folium
 streamlit-folium
 streamlit-option-menu
+streamlit-shadcn-ui
