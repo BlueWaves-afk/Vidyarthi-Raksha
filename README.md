@@ -18,6 +18,7 @@ Strategic dashboards, tactical routing, and analytical intelligence in one Strea
 - [Scenario Planning Workflow](#scenario-planning-workflow)
 - [Quick Start](#quick-start)
 - [Repository Map](#repository-map)
+- [Related Repositories](#related-repositories)
 - [Validation & Success Metrics](#validation--success-metrics)
 - [Documentation Index](#documentation-index)
 - [Roadmap](#roadmap)
@@ -134,6 +135,12 @@ core/validate_digital_twin.py      # Data quality validation script
 data/precomputed_scenarios.py      # Real-time scenario cache (connects optimizer to UI)
 requirements.txt                   # Python deps
 ```
+
+## Related Repositories
+
+| Repository | Description |
+|------------|-------------|
+| [Vidyarthi_raksha_models](https://github.com/ben-biju/Vidyarthi_raksha_models.git) | Data processing and analytical models for demand forecasting, risk scoring, and equity analysis |
 
 ## Core Module Reference
 
