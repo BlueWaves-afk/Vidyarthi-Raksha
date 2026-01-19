@@ -1,5 +1,5 @@
 <div align="center">
-<img width="840" height="417" alt="image" src="https://github.com/user-attachments/assets/c832f03f-d42f-4457-aa4b-d5e88f767442" />
+<img width="3840" height="2701" alt="image" src="https://github.com/user-attachments/assets/06d0c7a9-1ab4-4aac-aad4-377d614ceb89" />
 
 # Vidyarthi-Raksha
 
